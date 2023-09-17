@@ -8,7 +8,7 @@ import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.model.UserEntity;
 
 @Entity
-@Table(name = "USERS", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "USERS")
 @Getter
 public class ExtraUser implements UserEntity {
 
