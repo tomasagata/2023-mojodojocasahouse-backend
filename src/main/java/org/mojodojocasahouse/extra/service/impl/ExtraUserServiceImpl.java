@@ -1,8 +1,8 @@
 package org.mojodojocasahouse.extra.service.impl;
 
-import jakarta.validation.ConstraintViolationException;
-import org.mojodojocasahouse.extra.dto.ExtraUserRegistrationDto;
-import org.mojodojocasahouse.extra.dto.ExtraUserRegistrationResponseDto;
+import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
+import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
+import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.model.impl.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.mojodojocasahouse.extra.service.ExtraUserService;
@@ -19,11 +19,10 @@ public class ExtraUserServiceImpl implements ExtraUserService {
         this.userRepository = userRepository;
     }
 
-    public ExtraUserRegistrationResponseDto registrarUsuario(ExtraUserRegistrationDto userRegistrationDto)
-                                                            throws ConstraintViolationException {
-        ExtraUser usuario = new ExtraUser(userRegistrationDto.getFirstName(), userRegistrationDto.getLastName(), userRegistrationDto.getEmail(), userRegistrationDto.getPassword());
-        ExtraUser registeredUser = userRepository.save(usuario);
+    public UserRegistrationResponse registerUser(UserRegistrationRequest userRegistrationDto) throws MismatchingPasswordsException {
+        ExtraUser newUser = ExtraUser.from(userRegistrationDto);
+        userRepository.save(newUser);
         // Do something with registered user
-        return new ExtraUserRegistrationResponseDto("ExtraUser created successfully");
+        return new UserRegistrationResponse("User created successfully");
     }
 }
