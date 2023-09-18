@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import org.mojodojocasahouse.extra.dto.ExtraUserLoginDto;
+import org.mojodojocasahouse.extra.dto.ExtraUserLoginResponseDto;
 import org.mojodojocasahouse.extra.dto.ExtraUserRegistrationDto;
 
 @Controller
@@ -24,5 +25,11 @@ public class ExtraUserRegistrationController {
                 userService.registrarUsuario(extraUserRegistrationDto),
                 HttpStatus.CREATED
         );
+    }
+    @PostMapping(path = "/login")
+    public ResponseEntity<?> loginEmployee(@RequestBody ExtraUserLoginDto extraUserLoginDto)
+    {
+        ExtraUserLoginResponseDto loginResponse = userService.loguearUsuario(extraUserLoginDto);
+        return ResponseEntity.ok(loginResponse);
     }
 }

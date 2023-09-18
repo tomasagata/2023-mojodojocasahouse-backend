@@ -11,8 +11,10 @@ import org.mojodojocasahouse.extra.model.UserEntity;
 public class ExtraUser implements UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name="employee_id", length = 45)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Setter
+    private int userid;
 
     @Setter
     @Column(name = "FIRST_NAME")

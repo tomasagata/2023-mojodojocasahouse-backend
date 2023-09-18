@@ -16,7 +16,7 @@ class ExtraUserTest {
                 "somepassword"
         );
 
-        Assertions.assertThat(unmanagedUser.getId()).isNull();
+        Assertions.assertThat(unmanagedUser.getUserid()).isNull();
     }
 
     @Test
