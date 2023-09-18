@@ -1,5 +1,6 @@
 package org.mojodojocasahouse.extra.exception.handler;
 
+import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.exception.handler.helper.ApiError;
 import org.springframework.http.HttpHeaders;
@@ -37,12 +38,22 @@ public class UserRegistrationExceptionHandler extends ResponseEntityExceptionHan
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
         }
-        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-        }
+//        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+//            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+//        }
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Data validation error", errors);
         return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
+    }
+
+    @ExceptionHandler(ExistingUserEmailException.class)
+    protected ResponseEntity<Object> handleExistingUserEmail(ExistingUserEmailException ex, WebRequest request){
+        ApiError apiError = new ApiError(
+                HttpStatus.CONFLICT,
+                "User registration conflict",
+                ex.getMessage()
+        );
+        return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
     }
 
 

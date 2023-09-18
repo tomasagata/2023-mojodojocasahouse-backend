@@ -2,6 +2,7 @@ package org.mojodojocasahouse.extra.service.impl;
 
 import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
+import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.model.impl.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
@@ -19,10 +20,26 @@ public class ExtraUserServiceImpl implements ExtraUserService {
         this.userRepository = userRepository;
     }
 
-    public UserRegistrationResponse registerUser(UserRegistrationRequest userRegistrationDto) throws MismatchingPasswordsException {
+    public UserRegistrationResponse registerUser(UserRegistrationRequest userRegistrationDto)
+        throws MismatchingPasswordsException, ExistingUserEmailException {
+
+        checkForExistingUserEmail(userRegistrationDto);
+
+        // create user entity from request data
         ExtraUser newUser = ExtraUser.from(userRegistrationDto);
-        userRepository.save(newUser);
-        // Do something with registered user
+
+        // Save new user
+        ExtraUser savedUser = userRepository.save(newUser);
+
         return new UserRegistrationResponse("User created successfully");
     }
+
+    private void checkForExistingUserEmail(UserRegistrationRequest userRequest) throws ExistingUserEmailException{
+        userRepository
+                .findByEmail(userRequest.getEmail())
+                .ifPresent(
+                        s -> {throw new ExistingUserEmailException();}
+                );
+    }
+
 }
