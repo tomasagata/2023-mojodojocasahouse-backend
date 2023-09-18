@@ -1,16 +1,15 @@
-package org.mojodojocasahouse.extra.model.impl;
+package org.mojodojocasahouse.extra.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
-import org.mojodojocasahouse.extra.model.UserEntity;
 
 @Entity
 @Table(name = "USERS")
 @Getter
-public class ExtraUser implements UserEntity {
+public class ExtraUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

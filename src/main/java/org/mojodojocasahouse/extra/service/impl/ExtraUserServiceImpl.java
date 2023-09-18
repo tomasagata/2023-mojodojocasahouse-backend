@@ -4,7 +4,7 @@ import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
-import org.mojodojocasahouse.extra.model.impl.ExtraUser;
+import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.mojodojocasahouse.extra.service.ExtraUserService;
 import org.springframework.beans.factory.annotation.Autowired;
