@@ -5,7 +5,7 @@ import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
-import org.mojodojocasahouse.extra.exception.handler.UserRegistrationExceptionHandler;
+import org.mojodojocasahouse.extra.exception.handler.UserAuthenticationExceptionHandler;
 import org.mojodojocasahouse.extra.exception.handler.helper.ApiError;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mojodojocasahouse.extra.service.impl.ExtraUserServiceImpl;
+import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,17 +29,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class UserRegistrationControllerTest {
+class AuthenticationControllerTest {
 
     private MockMvc mvc;
 
     private JacksonTester<ApiError> jsonApiError;
 
     @Mock
-    public ExtraUserServiceImpl service;
+    public AuthenticationService service;
 
     @InjectMocks
-    public UserRegistrationController controller;
+    public AuthenticationController controller;
 
     public static String asJsonString(final Object obj) {
         try {
@@ -55,7 +55,7 @@ class UserRegistrationControllerTest {
 
         mvc = MockMvcBuilders
                 .standaloneSetup(controller)
-                .setControllerAdvice(new UserRegistrationExceptionHandler())
+                .setControllerAdvice(new UserAuthenticationExceptionHandler())
                 .build();
     }
 

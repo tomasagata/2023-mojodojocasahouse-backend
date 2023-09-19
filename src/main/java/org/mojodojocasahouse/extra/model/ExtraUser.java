@@ -12,10 +12,8 @@ import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 public class ExtraUser {
 
     @Id
-    @Column(name="employee_id", length = 45)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Setter
-    private int userid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Setter
     @Column(name = "FIRST_NAME")
@@ -43,14 +41,14 @@ public class ExtraUser {
         this.password = password;
     }
 
-    public static ExtraUser from(UserRegistrationRequest userRegistrationDto)
+    public static ExtraUser from(UserRegistrationRequest userRegistrationDto, String encodedPassword)
                                             throws MismatchingPasswordsException {
         userRegistrationDto.validateMatchingPasswords();
         return new ExtraUser(
                 userRegistrationDto.getFirstName(),
                 userRegistrationDto.getLastName(),
                 userRegistrationDto.getEmail(),
-                userRegistrationDto.getPassword()
+                encodedPassword
                 );
     }
 }

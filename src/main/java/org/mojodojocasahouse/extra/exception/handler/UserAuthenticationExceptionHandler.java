@@ -1,6 +1,7 @@
 package org.mojodojocasahouse.extra.exception.handler;
 
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
+import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.exception.handler.helper.ApiError;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
-public class UserRegistrationExceptionHandler extends ResponseEntityExceptionHandler {
+public class UserAuthenticationExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(MismatchingPasswordsException.class)
     protected ResponseEntity<Object> handleMismatchingPasswords(MismatchingPasswordsException ex, WebRequest request){
@@ -38,9 +39,9 @@ public class UserRegistrationExceptionHandler extends ResponseEntityExceptionHan
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
         }
-//        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-//            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-//        }
+        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Data validation error", errors);
         return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
@@ -56,5 +57,14 @@ public class UserRegistrationExceptionHandler extends ResponseEntityExceptionHan
         return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    protected ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex, WebRequest request){
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                "User Authentication Error",
+                ex.getMessage()
+        );
+        return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
+    }
 
 }
