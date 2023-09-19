@@ -6,7 +6,6 @@ import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
-import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,10 +24,10 @@ public class AuthenticationService {
     }
 
     public UserRegistrationResponse registerUser(UserRegistrationRequest userRegistrationRequest)
-        throws MismatchingPasswordsException, ExistingUserEmailException {
+        throws ExistingUserEmailException {
 
-        // validate request
-        validateRegistrationRequest(userRegistrationRequest);
+        // validate email
+        validateEmailUniqueness(userRegistrationRequest);
 
         // Create encoded password
         String encodedPassword = passwordEncoder.encode(userRegistrationRequest.getPassword());
@@ -43,7 +42,8 @@ public class AuthenticationService {
     }
 
 
-    public UserAuthenticationResponse authenticateUser(UserAuthenticationRequest userAuthenticationRequest) {
+    public UserAuthenticationResponse authenticateUser(UserAuthenticationRequest userAuthenticationRequest)
+            throws InvalidCredentialsException{
 
         // Encode receiving password
         String encodedPassword = passwordEncoder.encode(userAuthenticationRequest.getPassword());
@@ -67,11 +67,5 @@ public class AuthenticationService {
                 );
     }
 
-
-    private void validateRegistrationRequest(UserRegistrationRequest userRegistrationRequest)
-            throws ExistingUserEmailException, MismatchingPasswordsException{
-        validateEmailUniqueness(userRegistrationRequest);
-        userRegistrationRequest.validateMatchingPasswords();
-    }
 
 }

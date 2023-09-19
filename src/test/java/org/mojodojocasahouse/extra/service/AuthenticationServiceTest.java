@@ -6,7 +6,6 @@ import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
-import org.mojodojocasahouse.extra.exception.MismatchingPasswordsException;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.assertj.core.api.Assertions;
@@ -64,24 +63,6 @@ public class AuthenticationServiceTest {
         // verify
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response).isEqualTo(successfulResponse);
-    }
-
-    @Test
-    public void testRegisteringAUserWithMismatchingPasswordsThrowsMismatchingPasswordsException() {
-        // Setup - data
-        UserRegistrationRequest mjDto = new UserRegistrationRequest(
-                "Michael",
-                "Jordan",
-                "mj@me.com",
-                "some_password",
-                "other_password"
-        );
-
-        // exercise and verify
-        Assertions
-                .assertThatThrownBy(() -> serv.registerUser(mjDto))
-                .isInstanceOf(MismatchingPasswordsException.class)
-                .hasMessage("Passwords must match");
     }
 
     @Test
