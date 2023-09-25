@@ -40,7 +40,7 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<UserAuthenticationResponse> loginEmployee(
+    public ResponseEntity<UserAuthenticationResponse> loginUser(
             @Valid @RequestBody UserAuthenticationRequest userAuthenticationRequest,
             HttpServletResponse servletResponse)
     {

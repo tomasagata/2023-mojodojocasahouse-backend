@@ -3,6 +3,9 @@ package org.mojodojocasahouse.extra.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
+
 import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 
 @Entity
@@ -30,6 +33,10 @@ public class ExtraUser {
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @Setter
+    @Column(name = "idExpense", nullable = false)
+    private Set <ExtraExpense> idExpense;
 
     public ExtraUser() {}
 
