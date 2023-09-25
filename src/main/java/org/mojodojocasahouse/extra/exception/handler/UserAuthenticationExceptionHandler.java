@@ -4,7 +4,7 @@ import org.mojodojocasahouse.extra.exception.AccessForbiddenException;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
-import org.mojodojocasahouse.extra.exception.handler.helper.ApiError;
+import org.mojodojocasahouse.extra.dto.ApiError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

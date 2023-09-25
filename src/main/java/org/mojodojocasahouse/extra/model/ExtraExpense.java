@@ -1,15 +1,15 @@
 package org.mojodojocasahouse.extra.model;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.Valid;
-
-import java.util.UUID;
 
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.sql.Date;
 
 @Entity
 @Table(name = "EXPENSES")
@@ -22,8 +22,8 @@ public class ExtraExpense{
 
     @ManyToOne
     @Setter
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private ExtraUser idUsuario;
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private ExtraUser userId;
 
     @Setter
     @Column(name = "CONCEPT", nullable = false)
@@ -31,26 +31,28 @@ public class ExtraExpense{
 
     @Setter
     @Column(name="AMOUNT", nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     @Setter
     @Column(name="DATE", nullable = false)
-    private String date;
+    private Date date;
 
     public ExtraExpense(){}
 
-    public ExtraExpense(ExtraUser user, String concept, Double amount, String date){
-        this.idUsuario = user;
+    public ExtraExpense(ExtraUser user, String concept, BigDecimal amount, Date date){
+        this.userId = user;
         this.concept = concept;
         this.amount = amount;
         this.date = date;
     }
 
-    public static ExtraExpense from(@Valid ExpenseAddingRequest expenseAddingRequest, ExtraUser user) {
-        return new ExtraExpense(user, expenseAddingRequest.getConcept(), Double.parseDouble(expenseAddingRequest.getAmount()), expenseAddingRequest.getDate());
+    public static ExtraExpense from(ExpenseAddingRequest expenseAddingRequest, ExtraUser user) {
+        return new ExtraExpense(
+                user,
+                expenseAddingRequest.getConcept(),
+                expenseAddingRequest.getAmount(),
+                expenseAddingRequest.getDate()
+        );
     }
-    
-
-
 
 }

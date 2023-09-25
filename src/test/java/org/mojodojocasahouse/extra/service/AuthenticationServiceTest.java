@@ -2,10 +2,7 @@ package org.mojodojocasahouse.extra.service;
 
 import jakarta.servlet.http.Cookie;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.mojodojocasahouse.extra.dto.UserAuthenticationRequest;
-import org.mojodojocasahouse.extra.dto.UserAuthenticationResponse;
-import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
-import org.mojodojocasahouse.extra.dto.UserRegistrationResponse;
+import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.model.ExtraUser;
@@ -19,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mojodojocasahouse.extra.repository.SessionTokenRepository;
 import org.springframework.data.util.Pair;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -55,7 +51,7 @@ public class AuthenticationServiceTest {
                 "somepassword",
                 "somepassword"
         );
-        UserRegistrationResponse successfulResponse= new UserRegistrationResponse(
+        ApiResponse successfulResponse= new ApiResponse(
                 "User created successfully"
         );
 
@@ -63,7 +59,7 @@ public class AuthenticationServiceTest {
         given(repo.save(any(ExtraUser.class))).willReturn(mj);
 
         // exercise
-        UserRegistrationResponse response = serv.registerUser(mjDto);
+        ApiResponse response = serv.registerUser(mjDto);
 
         // verify
         Assertions.assertThat(response).isNotNull();
@@ -114,21 +110,21 @@ public class AuthenticationServiceTest {
                 UUID.fromString("123e4567-e89b-12d3-a456-426655440000"),
                 existingUser
         );
-        UserAuthenticationResponse expectedResponse = new UserAuthenticationResponse(
+        ApiResponse expectedResponse = new ApiResponse(
                 "Login Success"
         );
         Cookie expectedCookie = new Cookie(
                 "JSESSIONID",
                 "123e4567-e89b-12d3-a456-426655440000"
         );
-        Pair<UserAuthenticationResponse, Cookie> expectedResponseCookiePair = Pair.of(expectedResponse, expectedCookie);
+        Pair<ApiResponse, Cookie> expectedResponseCookiePair = Pair.of(expectedResponse, expectedCookie);
 
         // Setup - expectations
         given(repo.findOneByEmailAndPassword(any(String.class), any(String.class))).willReturn(Optional.of(existingUser));
         given(tokenRepository.save(any(SessionToken.class))).willReturn(token);
 
         // exercise
-        Pair<UserAuthenticationResponse, Cookie> actualResponseCookiePair = serv.authenticateUser(request);
+        Pair<ApiResponse, Cookie> actualResponseCookiePair = serv.authenticateUser(request);
 
         // verify
         Assertions.assertThat(actualResponseCookiePair).isEqualTo(expectedResponseCookiePair);

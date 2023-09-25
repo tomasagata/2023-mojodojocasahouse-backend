@@ -1,6 +1,7 @@
 package org.mojodojocasahouse.extra.controller;
 import java.util.UUID;
 
+import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
@@ -17,21 +18,24 @@ import jakarta.validation.Valid;
 
 @RestController
 public class ExpensesController {
-    @Autowired
-    private AuthenticationService userService;
-    @Autowired
-    private ExpenseService expenseService;
 
+    private final AuthenticationService userService;
+    private final ExpenseService expenseService;
+
+    public ExpensesController(AuthenticationService userService, ExpenseService expenseService) {
+        this.userService = userService;
+        this.expenseService = expenseService;
+    }
 
 
     @PostMapping(value = "/addExpense" , consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> addExpense(@CookieValue("JSESSIONID") UUID cookie, @Valid @RequestBody ExpenseAddingRequest expenseAddingRequest){
         userService.validateAuthentication(cookie);
         ExtraUser idUser = userService.getUserBySessionToken(cookie);
-        expenseService.addExpense(idUser, expenseAddingRequest);
+        ApiResponse response = expenseService.addExpense(idUser, expenseAddingRequest);
         return new ResponseEntity<>(
-                "Expense added succesfully!",
-                HttpStatus.OK
+                response,
+                HttpStatus.CREATED
         );
     }
 }
