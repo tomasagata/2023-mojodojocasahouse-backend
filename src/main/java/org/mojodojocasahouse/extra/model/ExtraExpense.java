@@ -3,6 +3,8 @@ package org.mojodojocasahouse.extra.model;
 import jakarta.persistence.Entity;
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
 
 import jakarta.persistence.*;
@@ -37,15 +39,15 @@ public class ExtraExpense{
 
     public ExtraExpense(){}
 
-    public ExtraExpense(ExtraUser idUsuario, String concept, Double amount, String date){
-        this.idUsuario = idUsuario;
+    public ExtraExpense(ExtraUser user, String concept, Double amount, String date){
+        this.idUsuario = user;
         this.concept = concept;
         this.amount = amount;
         this.date = date;
     }
 
-    public static ExtraExpense from(@Valid ExpenseAddingRequest expenseAddingRequest) {
-        return new ExtraExpense(expenseAddingRequest.getUserId(), expenseAddingRequest.getConcept(), expenseAddingRequest.getAmount(), expenseAddingRequest.getDate());
+    public static ExtraExpense from(@Valid ExpenseAddingRequest expenseAddingRequest, ExtraUser user) {
+        return new ExtraExpense(user, expenseAddingRequest.getConcept(), Double.parseDouble(expenseAddingRequest.getAmount()), expenseAddingRequest.getDate());
     }
     
 

@@ -16,6 +16,7 @@ import org.mojodojocasahouse.extra.repository.SessionTokenRepository;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -93,6 +94,12 @@ public class AuthenticationService {
                 .ifPresent(
                         s -> {throw new ExistingUserEmailException();}
                 );
+    }
+
+    public ExtraUser getUserBySessionToken(UUID cookie) {
+       Optional<SessionToken> sessionToken = sessionRepository.findById(cookie);
+        ExtraUser user = sessionToken.get().getLinkedUser();
+        return user;
     }
 
 
