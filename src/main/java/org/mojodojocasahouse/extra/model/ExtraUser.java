@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -36,6 +37,7 @@ public class ExtraUser {
     private String password;
 
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     @Setter
     @Column(name = "idExpense", nullable = false)
     private Set <ExtraExpense> idExpense;

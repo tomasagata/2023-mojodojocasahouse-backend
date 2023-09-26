@@ -1,9 +1,11 @@
 package org.mojodojocasahouse.extra.controller;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
+import org.mojodojocasahouse.extra.dto.ExpenseDTO;
 import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
@@ -43,15 +45,24 @@ public class ExpensesController {
     }
     //FIX
     @GetMapping(path = "/getMyExpenses", produces = "application/json")
-    public ResponseEntity<List<ExtraExpense>> getMyExpenses(@CookieValue("JSESSIONID") UUID cookie){
+    public ResponseEntity<List<ExpenseDTO>> getMyExpenses(@CookieValue("JSESSIONID") UUID cookie){
         userService.validateAuthentication(cookie);
         ExtraUser user = userService.getUserBySessionToken(cookie);
 
         List <ExtraExpense> listOfExpenses = expenseService.getAllExpensesByUserId(user);
-        return new ResponseEntity<>(
-            listOfExpenses,
-            HttpStatus.OK
-        );
+        // Convert ExtraExpense entities to ExpenseDTO
+        List<ExpenseDTO> expenseDTOs = new ArrayList<>();
+        for (ExtraExpense expense : listOfExpenses) {
+            ExpenseDTO expenseDTO = new ExpenseDTO(null, null, null, null, null);
+            expenseDTO.setId(expense.getId());
+            expenseDTO.setUserId(expense.getUserId().getId());
+            expenseDTO.setConcept(expense.getConcept());
+            expenseDTO.setAmount(expense.getAmount());
+            expenseDTO.setDate(expense.getDate());
+            expenseDTOs.add(expenseDTO);
+        }
+    
+        return ResponseEntity.ok(expenseDTOs);
     }
 }
 
