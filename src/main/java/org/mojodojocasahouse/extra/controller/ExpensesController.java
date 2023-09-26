@@ -1,8 +1,10 @@
 package org.mojodojocasahouse.extra.controller;
+import java.util.List;
 import java.util.UUID;
 
 import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
+import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.mojodojocasahouse.extra.service.ExpenseService;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +39,18 @@ public class ExpensesController {
         return new ResponseEntity<>(
                 response,
                 HttpStatus.CREATED
+        );   
+    }
+    //FIX
+    @GetMapping(path = "/getMyExpenses", produces = "application/json")
+    public ResponseEntity<List<ExtraExpense>> getMyExpenses(@CookieValue("JSESSIONID") UUID cookie){
+        userService.validateAuthentication(cookie);
+        ExtraUser user = userService.getUserBySessionToken(cookie);
+
+        List <ExtraExpense> listOfExpenses = expenseService.getAllExpensesByUserId(user);
+        return new ResponseEntity<>(
+            listOfExpenses,
+            HttpStatus.OK
         );
     }
 }

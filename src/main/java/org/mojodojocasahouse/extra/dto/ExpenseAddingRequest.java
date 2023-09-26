@@ -10,8 +10,8 @@ import java.sql.Date;
 
 @Data
 public class ExpenseAddingRequest {
-    @Max(value = 100, message = "Concept cannot exceed 100 characters")
-    @Pattern(regexp = "^[A-Za-z\\d ]$", message = "Concept must only contain letters or numbers")
+    @Size(max = 100, message = "Concept cannot exceed 100 characters")
+    @Pattern(regexp = "^[A-Za-z\\d\\s]+$", message = "Concept must only contain letters or numbers")
     private String concept;
 
     @NotNull(message = "Amount is mandatory")
