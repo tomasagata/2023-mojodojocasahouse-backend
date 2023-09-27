@@ -26,7 +26,7 @@ public class ExpenseService {
         ExtraExpense savedExpense = expenseRepository.save(newExpense);
         return new ApiResponse("Expense added succesfully!");
     }
-    
+    //get all expenses of the user that is making the request
     public List<ExtraExpense> getAllExpensesByUserId(ExtraUser user) {
         return expenseRepository.findAllExpensesByUserId(user);
     }

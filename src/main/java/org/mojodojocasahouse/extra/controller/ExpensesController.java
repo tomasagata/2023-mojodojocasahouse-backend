@@ -43,7 +43,7 @@ public class ExpensesController {
                 HttpStatus.CREATED
         );   
     }
-    //FIX
+    
     @GetMapping(path = "/getMyExpenses", produces = "application/json")
     public ResponseEntity<List<ExpenseDTO>> getMyExpenses(@CookieValue("JSESSIONID") UUID cookie){
         userService.validateAuthentication(cookie);

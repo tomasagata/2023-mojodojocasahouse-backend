@@ -109,7 +109,6 @@ public class AuthenticationControllerProtectedTest {
         assertThatResponseReturnsError(response, expectedError);
     }
 
-
     private MockHttpServletResponse getProtectedResourceNoCookie() throws Exception {
         return mvc.perform(MockMvcRequestBuilders.
                         get("/protected")

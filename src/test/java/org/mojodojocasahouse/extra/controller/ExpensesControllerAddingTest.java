@@ -2,8 +2,19 @@ package org.mojodojocasahouse.extra.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -11,10 +22,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mojodojocasahouse.extra.dto.ApiError;
 import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
+import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.exception.handler.UserAuthenticationExceptionHandler;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.mojodojocasahouse.extra.service.ExpenseService;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,16 +63,68 @@ public class ExpensesControllerAddingTest {
     }
 
 
-    /*
+    @Test
+    public void testAddingExpenseWithCredentialsIsDoneSuccesfully() throws Exception {
+        // Setup - data
+        ExpenseAddingRequest request = new ExpenseAddingRequest(
+            "test",
+            new BigDecimal(100),
+            new Date (2018,12,9)
+        );
+        Cookie sessionCookie = new Cookie(
+                "JSESSIONID",
+                "123e4567-e89b-12d3-a456-426655440000"
+        );
+        ApiResponse expectedResponse = new ApiResponse(
+                "Expense added succesfully!"
+        );
 
+        // exercise
+        MockHttpServletResponse response = postExpenseAddToControllerWithCookie(request, sessionCookie);
 
+        // Verify
+        Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
+    }
+    /* 
+    @Test
+    public void testAccessingProtectedResourceWithInvalidCredentialsThrowsError() throws Exception {
+        // Setup - data
+        Cookie sessionCookie = new Cookie(
+                "JSESSIONID",
+                "123e4567-e89b-12d3-a456-426655440000"
+        );
+        ApiError expectedError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                "User Authentication Error",
+                "Session is invalid or expired"
+        );
 
-        Tests
+        // Setup - expectations
+        doThrow(new InvalidSessionTokenException()).when(service).validateAuthentication(any());
 
+        // exercise
+        MockHttpServletResponse response = getProtectedResourceWithCookie(sessionCookie);
 
+        // Verify
+        assertThatResponseReturnsError(response, expectedError);
+    }
 
-     */
+    @Test
+    public void testAccessingProtectedResourceWithNoCookieThrowsError() throws Exception {
+        // Setup - data
+        ApiError expectedError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                "Authorization Error",
+                "Required cookie 'JSESSIONID' for method parameter type UUID is not present"
+        );
 
+        // exercise
+        MockHttpServletResponse response = getProtectedResourceNoCookie();
+
+        // Verify
+        assertThatResponseReturnsError(response, expectedError);
+    }
+*/
 
     private MockHttpServletResponse postExpenseAddToControllerWithCookie(ExpenseAddingRequest request, Cookie cookie) throws Exception{
         return mvc.perform(MockMvcRequestBuilders.
