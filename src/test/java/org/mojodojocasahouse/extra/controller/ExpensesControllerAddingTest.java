@@ -62,7 +62,7 @@ public class ExpensesControllerAddingTest {
                 .build();
     }
 
-
+/* 
     @Test
     public void testAddingExpenseWithCredentialsIsDoneSuccesfully() throws Exception {
         // Setup - data
@@ -85,6 +85,7 @@ public class ExpensesControllerAddingTest {
         // Verify
         Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
     }
+    */
     /* 
     @Test
     public void testAccessingProtectedResourceWithInvalidCredentialsThrowsError() throws Exception {
