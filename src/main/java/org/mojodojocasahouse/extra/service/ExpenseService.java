@@ -18,12 +18,12 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public ApiResponse addExpense(ExtraUser user, @Valid ExpenseAddingRequest expenseAddingRequest) {
+    public ApiResponse addExpense(ExtraUser user, ExpenseAddingRequest expenseAddingRequest) {
         //create expense entity from request data
         ExtraExpense newExpense = ExtraExpense.from(expenseAddingRequest, user);
 
         //Save new expense
-        ExtraExpense savedExpense = expenseRepository.save(newExpense);
+        expenseRepository.save(newExpense);
         return new ApiResponse("Expense added succesfully!");
     }
     //get all expenses of the user that is making the request

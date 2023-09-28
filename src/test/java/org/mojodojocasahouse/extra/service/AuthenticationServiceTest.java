@@ -5,6 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
+import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.model.SessionToken;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
@@ -22,6 +23,8 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationServiceTest {
@@ -146,5 +149,78 @@ public class AuthenticationServiceTest {
                 .assertThatThrownBy(() -> serv.authenticateUser(request))
                 .isInstanceOf(InvalidCredentialsException.class)
                 .hasMessage("Invalid Authentication Credentials");
+    }
+
+    @Test
+    public void testValidatingSessionTokenOfExistingSessionThrowsNothing(){
+        // Setup - data
+        UUID validSessionId = UUID.fromString("123e4567-e89b-12d3-a456-426655440000");
+        ExtraUser user = new ExtraUser(
+                "Michael",
+                "Jordan",
+                "mj@me.com",
+                "somepassword"
+        );
+        SessionToken linkedSessionToken = new SessionToken(
+                validSessionId,
+                user
+        );
+
+        // Setup - expectations
+        given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
+
+        // assertions
+        Assertions.assertThatNoException().isThrownBy(() -> serv.validateAuthentication(validSessionId));
+
+    }
+
+    @Test
+    public void testValidatingSessionTokenOfNonExistingSessionThrowsInvalidSessionTokenException(){
+        // Setup - data
+        UUID validSessionId = UUID.fromString("123e4567-e89b-12d3-a456-426655440000");
+
+        // Setup - expectations
+        given(tokenRepository.findById(any())).willReturn(Optional.empty());
+
+        // assertions
+        Assertions.assertThatThrownBy(() -> serv.validateAuthentication(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
+
+    }
+
+    @Test
+    public void testGettingUserByValidSessionIdReturnsUser(){
+        // Setup - data
+        UUID validSessionId = UUID.fromString("123e4567-e89b-12d3-a456-426655440000");
+        ExtraUser user = new ExtraUser(
+                "Michael",
+                "Jordan",
+                "mj@me.com",
+                "somepassword"
+        );
+        SessionToken linkedSessionToken = new SessionToken(
+                validSessionId,
+                user
+        );
+
+        // Setup - expectations
+        given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
+
+        // exercise
+        ExtraUser foundUser = serv.getUserBySessionToken(validSessionId);
+
+        // verify
+        Assertions.assertThat(foundUser).isEqualTo(user);
+    }
+
+    @Test
+    public void testGettingUserByInvalidSessionIdThrowsInvalidSessionTokenException(){
+        // Setup - data
+        UUID validSessionId = UUID.fromString("123e4567-e89b-12d3-a456-426655440000");
+
+        // Setup - expectations
+        given(tokenRepository.findById(any())).willReturn(Optional.empty());
+
+        // exercise and verify
+        Assertions.assertThatThrownBy(() -> serv.getUserBySessionToken(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
     }
 }

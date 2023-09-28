@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExtraExpenseRepository extends JpaRepository<ExtraExpense, Long>{
-    @Query("SELECT e FROM ExtraExpense e WHERE e.userId = :userId")
+//    @Query("SELECT e FROM ExtraExpense e WHERE e.userId = :userId")
     List<ExtraExpense> findAllExpensesByUserId(@Param("userId") ExtraUser user);
 
     Optional<ExtraExpense> findByConcept(String string);

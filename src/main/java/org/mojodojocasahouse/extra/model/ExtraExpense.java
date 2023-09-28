@@ -21,19 +21,15 @@ public class ExtraExpense{
     private Long id;
 
     @ManyToOne
-    @Setter
     @JoinColumn(name = "USER_ID", nullable = false)
     private ExtraUser userId;
 
-    @Setter
     @Column(name = "CONCEPT", nullable = false)
     private String concept;
 
-    @Setter
     @Column(name="AMOUNT", nullable = false)
     private BigDecimal amount;
 
-    @Setter
     @Column(name="DATE", nullable = false)
     private Date date;
 

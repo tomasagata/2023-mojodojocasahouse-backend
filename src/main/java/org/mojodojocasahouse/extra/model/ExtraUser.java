@@ -36,12 +36,6 @@ public class ExtraUser {
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @Setter
-    @Column(name = "idExpense", nullable = false)
-    private Set <ExtraExpense> idExpense;
-
     public ExtraUser() {}
 
     public ExtraUser(String firstName, String lastName, String email, String password) {
