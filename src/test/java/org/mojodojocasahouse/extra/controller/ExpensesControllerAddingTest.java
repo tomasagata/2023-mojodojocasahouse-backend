@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +22,7 @@ import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
 import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.exception.handler.UserAuthenticationExceptionHandler;
+import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.mojodojocasahouse.extra.service.ExpenseService;
 import org.springframework.boot.test.json.JacksonTester;
@@ -62,22 +61,32 @@ public class ExpensesControllerAddingTest {
                 .build();
     }
 
-/* 
+
     @Test
-    public void testAddingExpenseWithCredentialsIsDoneSuccesfully() throws Exception {
+    public void testAddingExpenseWithCredentialsReturnsSuccessfulResponse() throws Exception {
         // Setup - data
         ExpenseAddingRequest request = new ExpenseAddingRequest(
             "test",
             new BigDecimal(100),
-            new Date (2018,12,9)
+            Date.valueOf("2018-12-09")
         );
         Cookie sessionCookie = new Cookie(
                 "JSESSIONID",
                 "123e4567-e89b-12d3-a456-426655440000"
         );
+        ExtraUser linkedUser = new ExtraUser(
+                "M",
+                "J",
+                "mj@me.com",
+                "Somepassword"
+        );
         ApiResponse expectedResponse = new ApiResponse(
                 "Expense added succesfully!"
         );
+
+        // Setup - Expectations
+        given(authService.getUserBySessionToken(any())).willReturn(linkedUser);
+        given(expenseService.addExpense(any(), any())).willReturn(expectedResponse);
 
         // exercise
         MockHttpServletResponse response = postExpenseAddToControllerWithCookie(request, sessionCookie);
@@ -85,11 +94,15 @@ public class ExpensesControllerAddingTest {
         // Verify
         Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
     }
-    */
-    /* 
+
     @Test
-    public void testAccessingProtectedResourceWithInvalidCredentialsThrowsError() throws Exception {
+    public void testAddingNewExpenseWithInvalidCredentialsThrowsError() throws Exception {
         // Setup - data
+        ExpenseAddingRequest request = new ExpenseAddingRequest(
+                "test",
+                new BigDecimal(100),
+                Date.valueOf("2018-12-09")
+        );
         Cookie sessionCookie = new Cookie(
                 "JSESSIONID",
                 "123e4567-e89b-12d3-a456-426655440000"
@@ -101,18 +114,23 @@ public class ExpensesControllerAddingTest {
         );
 
         // Setup - expectations
-        doThrow(new InvalidSessionTokenException()).when(service).validateAuthentication(any());
+        doThrow(new InvalidSessionTokenException()).when(authService).validateAuthentication(any());
 
         // exercise
-        MockHttpServletResponse response = getProtectedResourceWithCookie(sessionCookie);
+        MockHttpServletResponse response = postExpenseAddToControllerWithCookie(request, sessionCookie);
 
         // Verify
         assertThatResponseReturnsError(response, expectedError);
     }
 
     @Test
-    public void testAccessingProtectedResourceWithNoCookieThrowsError() throws Exception {
+    public void testAddingExpenseWithNoCookieThrowsError() throws Exception {
         // Setup - data
+        ExpenseAddingRequest request = new ExpenseAddingRequest(
+                "test",
+                new BigDecimal(100),
+                Date.valueOf("2018-12-09")
+        );
         ApiError expectedError = new ApiError(
                 HttpStatus.UNAUTHORIZED,
                 "Authorization Error",
@@ -120,12 +138,11 @@ public class ExpensesControllerAddingTest {
         );
 
         // exercise
-        MockHttpServletResponse response = getProtectedResourceNoCookie();
+        MockHttpServletResponse response = postExpenseAddToControllerNoCookie(request);
 
         // Verify
         assertThatResponseReturnsError(response, expectedError);
     }
-*/
 
     private MockHttpServletResponse postExpenseAddToControllerWithCookie(ExpenseAddingRequest request, Cookie cookie) throws Exception{
         return mvc.perform(MockMvcRequestBuilders.

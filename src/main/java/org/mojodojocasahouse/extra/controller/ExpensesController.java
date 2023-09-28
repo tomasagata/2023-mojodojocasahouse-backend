@@ -41,7 +41,7 @@ public class ExpensesController {
         return new ResponseEntity<>(
                 response,
                 HttpStatus.CREATED
-        );   
+        );
     }
     
     @GetMapping(path = "/getMyExpenses", produces = "application/json")
