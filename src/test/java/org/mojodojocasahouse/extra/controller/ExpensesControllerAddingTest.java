@@ -85,11 +85,16 @@ public class ExpensesControllerAddingTest {
         // Verify
         Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
     }
-    */
-    /* 
+    
+    
     @Test
-    public void testAccessingProtectedResourceWithInvalidCredentialsThrowsError() throws Exception {
+    public void testAddingExpenseWithOutCredentialsThrowsAuthenticationError() throws Exception {
         // Setup - data
+        ExpenseAddingRequest request = new ExpenseAddingRequest(
+            "test",
+            new BigDecimal(100),
+            new Date (2018,12,9)
+        );
         Cookie sessionCookie = new Cookie(
                 "JSESSIONID",
                 "123e4567-e89b-12d3-a456-426655440000"
@@ -104,12 +109,12 @@ public class ExpensesControllerAddingTest {
         doThrow(new InvalidSessionTokenException()).when(service).validateAuthentication(any());
 
         // exercise
-        MockHttpServletResponse response = getProtectedResourceWithCookie(sessionCookie);
+        MockHttpServletResponse response = postExpenseAddToControllerNoCookie(request);
 
         // Verify
         assertThatResponseReturnsError(response, expectedError);
     }
-
+    
     @Test
     public void testAccessingProtectedResourceWithNoCookieThrowsError() throws Exception {
         // Setup - data
