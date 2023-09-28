@@ -95,6 +95,7 @@ public class ExpensesControllerAddingTest {
         Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
     }
 
+
     @Test
     public void testAddingNewExpenseWithInvalidCredentialsThrowsError() throws Exception {
         // Setup - data
@@ -122,6 +123,7 @@ public class ExpensesControllerAddingTest {
         // Verify
         assertThatResponseReturnsError(response, expectedError);
     }
+
 
     @Test
     public void testAddingExpenseWithNoCookieThrowsError() throws Exception {
