@@ -65,4 +65,25 @@ public class AuthenticationController {
         );
     }
 
+    @GetMapping(path = "/logout", produces = "application/json")
+    public ResponseEntity<ApiResponse> logoutUser(@CookieValue("JSESSIONID") UUID sessionId, HttpServletResponse servletResponse)
+    {
+        userService.validateAuthentication(sessionId);
+        userService.revokeCredentials(sessionId);
+
+        // Create a new cookie with zero life to delete the existing cookie in the client.
+        Cookie zeroTtlCookie = new Cookie("JSESSIONID", null);
+        zeroTtlCookie.setMaxAge(0);
+
+        // Append Set-Cookie header to response
+        servletResponse.addCookie(
+                zeroTtlCookie
+        );
+
+        return new ResponseEntity<>(
+                new ApiResponse("User logout successful"),
+                HttpStatus.OK
+        );
+    }
+
 }
