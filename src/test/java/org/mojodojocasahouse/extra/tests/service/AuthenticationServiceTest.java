@@ -321,4 +321,30 @@ public class AuthenticationServiceTest {
         Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId)).isInstanceOf(SessionAlreadyRevokedException.class);
 
     }
+
+    @Test
+    public void testRevokingExpiredSessionThrowsInvalidSessionTokenException(){
+        // Setup - data
+        UUID validSessionId = UUID.fromString("123e4567-e89b-12d3-a456-426655440000");
+        ExtraUser user = new ExtraUser(
+                "Michael",
+                "Jordan",
+                "mj@me.com",
+                "somepassword"
+        );
+        TestSessionToken linkedSessionToken = new TestSessionToken(
+                validSessionId,
+                true,
+                -200,
+                user
+        );
+
+
+        // Setup - expectations
+        given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
+
+        // assertions
+        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId)).isInstanceOf(SessionAlreadyRevokedException.class);
+
+    }
 }

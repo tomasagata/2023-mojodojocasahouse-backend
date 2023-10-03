@@ -11,10 +11,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "SESSION_TOKENS")
-@Getter
 public class SessionToken {
 
     @Id
+    @Getter
     protected UUID id;
 
     @Column(name = "GRANT_TIMESTAMP", nullable = false)
@@ -28,6 +28,7 @@ public class SessionToken {
 
     @ManyToOne
     @JoinColumn(name = "LINKED_USER_ID", nullable = false)
+    @Getter
     protected ExtraUser linkedUser;
 
     public SessionToken() {}
