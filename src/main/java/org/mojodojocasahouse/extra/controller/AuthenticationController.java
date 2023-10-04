@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.mojodojocasahouse.extra.dto.*;
+import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -82,6 +83,17 @@ public class AuthenticationController {
 
         return new ResponseEntity<>(
                 new ApiResponse("User logout successful"),
+                HttpStatus.OK
+        );
+    }
+
+    @PostMapping(path = "/auth/password/change", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ApiResponse> changePassword(@Valid @RequestBody UserChangePasswordRequest userChangePasswordRequest,@CookieValue("JSESSIONID") UUID cookie){
+        userService.validateAuthentication(cookie);
+        ExtraUser user = userService.getUserBySessionToken(cookie);
+        ApiResponse response = userService.changePassword(user,userChangePasswordRequest);
+        return new ResponseEntity<>(
+                response,
                 HttpStatus.OK
         );
     }

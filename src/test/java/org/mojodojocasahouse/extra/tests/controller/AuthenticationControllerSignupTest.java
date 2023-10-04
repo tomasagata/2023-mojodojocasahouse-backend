@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 
@@ -329,8 +330,7 @@ public class AuthenticationControllerSignupTest {
         ApiError apiError = new ApiError(
                 HttpStatus.BAD_REQUEST,
                 "Data validation error",
-                Arrays.asList(
-                        "passwordRepeat: Password must contain eight characters, one letter, one number and one of the following: @$!%*#?",
+                List.of(
                         "password: Password must contain eight characters, one letter, one number and one of the following: @$!%*#?"
                 )
         );
@@ -355,8 +355,7 @@ public class AuthenticationControllerSignupTest {
         ApiError apiError = new ApiError(
                 HttpStatus.BAD_REQUEST,
                 "Data validation error",
-                Arrays.asList(
-                        "passwordRepeat: Password must contain eight characters, one letter, one number and one of the following: @$!%*#?",
+                List.of(
                         "password: Password must contain eight characters, one letter, one number and one of the following: @$!%*#?"
                 )
         );
