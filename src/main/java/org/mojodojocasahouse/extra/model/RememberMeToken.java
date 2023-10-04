@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
+import org.mojodojocasahouse.extra.exception.SessionAlreadyRevokedException;
 
 import java.sql.Timestamp;
 import java.time.temporal.ChronoUnit;
@@ -28,9 +29,11 @@ public class RememberMeToken {
     protected Timestamp expirationDate;
 
     @Column(name = "SELECTOR", nullable = false, unique = true)
+    @Getter
     protected String selector;
 
     @Column(name = "VALIDATOR", nullable = false)
+    @Getter
     protected String validator;
 
     public RememberMeToken(){}
@@ -61,4 +64,10 @@ public class RememberMeToken {
         return Objects.equals(this.validator, DigestUtils.sha256Hex(selector + ':' + passwordHashHex));
     }
 
+    public void revoke() {
+        if(this.revoked){
+            throw new SessionAlreadyRevokedException();
+        }
+        this.revoked = true;
+    }
 }

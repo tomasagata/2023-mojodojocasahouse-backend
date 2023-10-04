@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.exception.MissingRequestParameterException;
+import org.mojodojocasahouse.extra.model.CookieCollection;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class AuthenticationController {
             @CookieValue(value = "remember-me", required = false) String rememberMeCookie,
             HttpServletResponse servletResponse) {
 
-        Pair<ApiResponse, Cookie> responseCookiePair;
+        Pair<ApiResponse, CookieCollection> responseCookiePair;
 
         if (rememberMeCookie != null && !rememberMeCookie.isBlank()){
             responseCookiePair = userService.authenticateUser(rememberMeCookie);
@@ -53,10 +54,11 @@ public class AuthenticationController {
             throw new MissingRequestParameterException();
         }
 
-        // Add new JSESSIONID cookie to prevent session-fixation
-        servletResponse.addCookie(
-                responseCookiePair.getSecond()
-        );
+        for ( Cookie c: responseCookiePair.getSecond().getCookies()){
+            servletResponse.addCookie(
+                    c
+            );
+        }
 
         // Return response
         return new ResponseEntity<>(
@@ -77,18 +79,29 @@ public class AuthenticationController {
     }
 
     @GetMapping(path = "/logout", produces = "application/json")
-    public ResponseEntity<ApiResponse> logoutUser(@CookieValue("JSESSIONID") UUID sessionId, HttpServletResponse servletResponse)
+    public ResponseEntity<ApiResponse> logoutUser(
+            @CookieValue("JSESSIONID") UUID sessionId,
+            HttpServletResponse servletResponse,
+            @CookieValue(value = "remember-me", required = false) String rememberMeCookie
+    )
     {
         userService.validateSession(sessionId);
-        userService.revokeCredentials(sessionId);
+        userService.revokeCredentials(sessionId, rememberMeCookie);
 
-        // Create a new cookie with zero life to delete the existing cookie in the client.
-        Cookie zeroTtlCookie = new Cookie("JSESSIONID", null);
-        zeroTtlCookie.setMaxAge(0);
+        // Create a new session cookie with zero life to delete the existing session cookie in the client.
+        Cookie zeroTtlSessionCookie = new Cookie("JSESSIONID", null);
+        zeroTtlSessionCookie.setMaxAge(0);
+
+        // Create a new session cookie with zero life to delete the existing session cookie in the client.
+        Cookie zeroTtlRememberMeCookie = new Cookie("remember-me", null);
+        zeroTtlSessionCookie.setMaxAge(0);
 
         // Append Set-Cookie header to response
         servletResponse.addCookie(
-                zeroTtlCookie
+                zeroTtlSessionCookie
+        );
+        servletResponse.addCookie(
+                zeroTtlRememberMeCookie
         );
 
         return new ResponseEntity<>(

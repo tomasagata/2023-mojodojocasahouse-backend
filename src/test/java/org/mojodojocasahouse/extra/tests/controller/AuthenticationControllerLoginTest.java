@@ -15,6 +15,7 @@ import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.UserAuthenticationRequest;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.handler.UserAuthenticationExceptionHandler;
+import org.mojodojocasahouse.extra.model.CookieCollection;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.data.util.Pair;
@@ -68,13 +69,12 @@ public class AuthenticationControllerLoginTest {
         ApiResponse expectedResponse = new ApiResponse(
                 "Login Success"
         );
-        Cookie expectedCookie = new Cookie(
-                "JSESSIONID",
-                "123e4567-e89b-12d3-a456-426655440000"
+        CookieCollection expectedCookies = new CookieCollection(
+                new Cookie("JSESSIONID", "123e4567-e89b-12d3-a456-426655440000")
         );
 
         // Setup - expectations
-        given(service.authenticateUser(request)).willReturn(Pair.of(expectedResponse, expectedCookie));
+        given(service.authenticateUser(request)).willReturn(Pair.of(expectedResponse, expectedCookies));
 
         // exercise
         MockHttpServletResponse response = postUserAuthenticationRequestToController(request);
@@ -91,13 +91,12 @@ public class AuthenticationControllerLoginTest {
         ApiResponse expectedResponse = new ApiResponse(
                 "Login Success"
         );
-        Cookie expectedCookie = new Cookie(
-                "JSESSIONID",
-                "123e4567-e89b-12d3-a456-426655440000"
+        CookieCollection expectedCookies = new CookieCollection(
+                new Cookie("JSESSIONID", "123e4567-e89b-12d3-a456-426655440000")
         );
 
         // Setup - expectations
-        given(service.authenticateUser(any(String.class))).willReturn(Pair.of(expectedResponse, expectedCookie));
+        given(service.authenticateUser(any(String.class))).willReturn(Pair.of(expectedResponse, expectedCookies));
 
         // exercise
         MockHttpServletResponse response = postLoginEndpointWithCookie(rememberMeCookie);
@@ -136,13 +135,12 @@ public class AuthenticationControllerLoginTest {
         ApiResponse expectedResponse = new ApiResponse(
                 "Login Success"
         );
-        Cookie expectedCookie = new Cookie(
-                "JSESSIONID",
-                "123e4567-e89b-12d3-a456-426655440000"
+        CookieCollection expectedCookies = new CookieCollection(
+                new Cookie("JSESSIONID", "123e4567-e89b-12d3-a456-426655440000")
         );
 
         // Setup - expectations
-        given(service.authenticateUser(any(String.class))).willReturn(Pair.of(expectedResponse, expectedCookie));
+        given(service.authenticateUser(any(String.class))).willReturn(Pair.of(expectedResponse, expectedCookies));
 
         // exercise
         MockHttpServletResponse response = postUserAuthenticationRequestToControllerWithCookie(request, rememberMeCookie);

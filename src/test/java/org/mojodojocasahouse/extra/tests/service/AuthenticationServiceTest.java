@@ -7,6 +7,7 @@ import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.exception.SessionAlreadyRevokedException;
+import org.mojodojocasahouse.extra.model.CookieCollection;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.model.SessionToken;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
@@ -124,17 +125,28 @@ public class AuthenticationServiceTest {
                 "123e4567-e89b-12d3-a456-426655440000"
         );
         expectedCookie.setMaxAge(1199);
-        Pair<ApiResponse, Cookie> expectedResponseCookiePair = Pair.of(expectedResponse, expectedCookie);
+        CookieCollection expectedCookies = new CookieCollection(expectedCookie);
+        Pair<ApiResponse, CookieCollection> expectedResponseCookiePair = Pair.of(expectedResponse, expectedCookies);
 
         // Setup - expectations
         given(repo.findOneByEmailAndPassword(any(String.class), any(String.class))).willReturn(Optional.of(existingUser));
         given(tokenRepository.save(any(SessionToken.class))).willReturn(token);
 
         // exercise
-        Pair<ApiResponse, Cookie> actualResponseCookiePair = serv.authenticateUser(request);
+        Pair<ApiResponse, CookieCollection> actualResponseCookiePair = serv.authenticateUser(request);
 
         // verify
-        Assertions.assertThat(actualResponseCookiePair).isEqualTo(expectedResponseCookiePair);
+        Assertions.assertThat(actualResponseCookiePair.getFirst()).isEqualTo(expectedResponseCookiePair.getFirst());
+        Assertions.assertThat(
+                actualResponseCookiePair
+                        .getSecond()
+                        .getCookies()
+        ).containsExactlyInAnyOrder(
+                expectedResponseCookiePair
+                        .getSecond()
+                        .getCookies()
+                        .toArray(Cookie[]::new)
+        );
     }
 
     @Test
@@ -279,7 +291,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
 
         // assertions
-        Assertions.assertThatNoException().isThrownBy(() -> serv.revokeCredentials(validSessionId));
+        Assertions.assertThatNoException().isThrownBy(() -> serv.revokeCredentials(validSessionId, null));
 
     }
 
@@ -292,7 +304,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.empty());
 
         // assertions
-        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
+        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId, null)).isInstanceOf(InvalidSessionTokenException.class);
 
     }
 
@@ -318,7 +330,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
 
         // assertions
-        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId)).isInstanceOf(SessionAlreadyRevokedException.class);
+        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId, null)).isInstanceOf(SessionAlreadyRevokedException.class);
 
     }
 
@@ -344,7 +356,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
 
         // assertions
-        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId)).isInstanceOf(SessionAlreadyRevokedException.class);
+        Assertions.assertThatThrownBy(() -> serv.revokeCredentials(validSessionId, null)).isInstanceOf(SessionAlreadyRevokedException.class);
 
     }
 }

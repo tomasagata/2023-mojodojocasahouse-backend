@@ -9,10 +9,7 @@ import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.exception.SessionAlreadyRevokedException;
-import org.mojodojocasahouse.extra.model.ExtraUser;
-import org.mojodojocasahouse.extra.model.RememberMeCookie;
-import org.mojodojocasahouse.extra.model.RememberMeToken;
-import org.mojodojocasahouse.extra.model.SessionToken;
+import org.mojodojocasahouse.extra.model.*;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.mojodojocasahouse.extra.repository.RememberMeTokenRepository;
 import org.mojodojocasahouse.extra.repository.SessionTokenRepository;
@@ -56,7 +53,7 @@ public class AuthenticationService {
     }
 
 
-    public Pair<ApiResponse, Cookie> authenticateUser(UserAuthenticationRequest userAuthenticationRequest)
+    public Pair<ApiResponse, CookieCollection> authenticateUser(UserAuthenticationRequest userAuthenticationRequest)
             throws InvalidCredentialsException{
 
         // Encode receiving password
@@ -69,16 +66,20 @@ public class AuthenticationService {
                         encodedPassword
                 ).orElseThrow(InvalidCredentialsException::new);
 
-        Cookie cookie = createNewSession(existingUser);
+        CookieCollection returnedCookies = new CookieCollection(createNewSession(existingUser));
+
+        if(userAuthenticationRequest.getRememberMe() == true){
+            returnedCookies.add(createNewRememberMeCookie(existingUser));
+        }
 
         // Return successful response if user found
         return Pair.of(
                 new ApiResponse("Login Success"),
-                cookie
+                returnedCookies
         );
     }
 
-    public Pair<ApiResponse, Cookie> authenticateUser(String rememberMeCookie) throws InvalidCredentialsException{
+    public Pair<ApiResponse, CookieCollection> authenticateUser(String rememberMeCookie) throws InvalidCredentialsException{
         // create RememberMeCookie object from request
         RememberMeCookie cookie = RememberMeCookie.from(rememberMeCookie);
 
@@ -90,13 +91,23 @@ public class AuthenticationService {
         // Validate token
         token.validate(cookie.getSelector(), cookie.getPasswordHashHex());
 
-        Cookie sessionCookie = createNewSession(token.getUser());
+        CookieCollection returnedCookies = new CookieCollection(createNewSession(token.getUser()));
 
         // Return successful response if user found
         return Pair.of(
                 new ApiResponse("Login Success"),
-                sessionCookie
+                returnedCookies
         );
+    }
+
+    private Cookie createNewRememberMeCookie(ExtraUser user) {
+        RememberMeToken token = rememberMeTokenRepository.save(
+                new RememberMeToken(user)
+        );
+
+        Cookie sessionCookie =  new Cookie("remember-me", token.getSelector() + ":" + user.getPassword());
+        sessionCookie.setMaxAge(1209600); // 1209600 = 2 weeks
+        return sessionCookie;
     }
 
     public Cookie createNewSession(ExtraUser linkedUser){
@@ -109,10 +120,23 @@ public class AuthenticationService {
         return sessionCookie;
     }
 
-    public void revokeCredentials(UUID sessionId) throws InvalidSessionTokenException, SessionAlreadyRevokedException {
-        SessionToken token = sessionRepository.findById(sessionId).orElseThrow(InvalidSessionTokenException::new);
-        token.revoke();
-        sessionRepository.save(token);
+    public void revokeCredentials(UUID sessionId, String rememberMeCookie) throws InvalidSessionTokenException, SessionAlreadyRevokedException {
+        // Get and revoke sessionCredentials
+        SessionToken sessionToken = sessionRepository
+                .findById(sessionId)
+                .orElseThrow(InvalidSessionTokenException::new);
+        sessionToken.revoke();
+        sessionRepository.save(sessionToken);
+
+        if(rememberMeCookie != null && !rememberMeCookie.isBlank()){
+            // Get and revoke RememberMeToken
+            RememberMeCookie cookie = RememberMeCookie.from(rememberMeCookie);
+            RememberMeToken rememberMeToken = rememberMeTokenRepository
+                    .findBySelector(cookie.getSelector())
+                    .orElseThrow(InvalidSessionTokenException::new);
+            rememberMeToken.revoke();
+            rememberMeTokenRepository.save(rememberMeToken);
+        }
     }
 
     public void validateSession(UUID sessionId) throws InvalidSessionTokenException {
