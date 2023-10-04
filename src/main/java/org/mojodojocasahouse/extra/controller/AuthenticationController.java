@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.mojodojocasahouse.extra.dto.*;
+import org.mojodojocasahouse.extra.exception.MissingRequestParameterException;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,19 @@ public class AuthenticationController {
 
     @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> loginUser(
-            @Valid @RequestBody UserAuthenticationRequest userAuthenticationRequest,
-            HttpServletResponse servletResponse)
-    {
-        // Authenticate new user
-        Pair<ApiResponse, Cookie> responseCookiePair = userService.authenticateUser(userAuthenticationRequest);
+            @Valid @RequestBody(required = false) UserAuthenticationRequest userAuthenticationRequest,
+            @CookieValue(value = "remember-me", required = false) String rememberMeCookie,
+            HttpServletResponse servletResponse) {
+
+        Pair<ApiResponse, Cookie> responseCookiePair;
+
+        if (rememberMeCookie != null && !rememberMeCookie.isBlank()){
+            responseCookiePair = userService.authenticateUser(rememberMeCookie);
+        } else if (userAuthenticationRequest != null) {
+            responseCookiePair = userService.authenticateUser(userAuthenticationRequest);
+        } else {
+            throw new MissingRequestParameterException();
+        }
 
         // Add new JSESSIONID cookie to prevent session-fixation
         servletResponse.addCookie(
@@ -56,10 +65,11 @@ public class AuthenticationController {
         );
     }
 
+
     @GetMapping(path = "/protected", produces = "application/json")
-    public ResponseEntity<ApiResponse> protectedResource(@CookieValue("JSESSIONID") UUID cookie)
+    public ResponseEntity<ApiResponse> protectedResource(@CookieValue("JSESSIONID") UUID sessionId)
     {
-        userService.validateAuthentication(cookie);
+        userService.validateSession(sessionId);
         return new ResponseEntity<>(
                 new ApiResponse("Authenticated and authorized!"),
                 HttpStatus.OK
@@ -69,7 +79,7 @@ public class AuthenticationController {
     @GetMapping(path = "/logout", produces = "application/json")
     public ResponseEntity<ApiResponse> logoutUser(@CookieValue("JSESSIONID") UUID sessionId, HttpServletResponse servletResponse)
     {
-        userService.validateAuthentication(sessionId);
+        userService.validateSession(sessionId);
         userService.revokeCredentials(sessionId);
 
         // Create a new cookie with zero life to delete the existing cookie in the client.
@@ -89,7 +99,7 @@ public class AuthenticationController {
 
     @PostMapping(path = "/auth/password/change", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> changePassword(@Valid @RequestBody UserChangePasswordRequest userChangePasswordRequest,@CookieValue("JSESSIONID") UUID cookie){
-        userService.validateAuthentication(cookie);
+        userService.validateSession(cookie);
         ExtraUser user = userService.getUserBySessionToken(cookie);
         ApiResponse response = userService.changePassword(user,userChangePasswordRequest);
         return new ResponseEntity<>(

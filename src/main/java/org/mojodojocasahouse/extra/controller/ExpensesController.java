@@ -33,9 +33,12 @@ public class ExpensesController {
 
 
     @PostMapping(value = "/addExpense" , consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> addExpense(@CookieValue("JSESSIONID") UUID cookie, @Valid @RequestBody ExpenseAddingRequest expenseAddingRequest){
-        userService.validateAuthentication(cookie);
-        ExtraUser idUser = userService.getUserBySessionToken(cookie);
+    public ResponseEntity<Object> addExpense(
+            @CookieValue("JSESSIONID") UUID sessionId,
+            @Valid @RequestBody ExpenseAddingRequest expenseAddingRequest
+    ){
+        userService.validateSession(sessionId);
+        ExtraUser idUser = userService.getUserBySessionToken(sessionId);
         ApiResponse response = expenseService.addExpense(idUser, expenseAddingRequest);
         return new ResponseEntity<>(
                 response,
@@ -44,9 +47,11 @@ public class ExpensesController {
     }
     
     @GetMapping(path = "/getMyExpenses", produces = "application/json")
-    public ResponseEntity<List<ExpenseDTO>> getMyExpenses(@CookieValue("JSESSIONID") UUID cookie){
-        userService.validateAuthentication(cookie);
-        ExtraUser user = userService.getUserBySessionToken(cookie);
+    public ResponseEntity<List<ExpenseDTO>> getMyExpenses(
+            @CookieValue("JSESSIONID") UUID sessionId
+    ){
+        userService.validateSession(sessionId);
+        ExtraUser user = userService.getUserBySessionToken(sessionId);
 
         List <ExtraExpense> listOfExpenses = expenseService.getAllExpensesByUserId(user);
         // Convert ExtraExpense entities to ExpenseDTO

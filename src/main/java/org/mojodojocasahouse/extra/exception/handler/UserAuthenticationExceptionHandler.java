@@ -4,6 +4,7 @@ import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.dto.ApiError;
+import org.mojodojocasahouse.extra.exception.MissingRequestParameterException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -59,6 +60,16 @@ public class UserAuthenticationExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex, WebRequest request){
         ApiError apiError = new ApiError(
                 HttpStatus.UNAUTHORIZED,
+                "Authentication Error",
+                ex.getMessage()
+        );
+        return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
+    }
+
+    @ExceptionHandler(MissingRequestParameterException.class)
+    protected ResponseEntity<Object> handleInvalidCredentials(MissingRequestParameterException ex, WebRequest request){
+        ApiError apiError = new ApiError(
+                HttpStatus.BAD_REQUEST,
                 "Authentication Error",
                 ex.getMessage()
         );

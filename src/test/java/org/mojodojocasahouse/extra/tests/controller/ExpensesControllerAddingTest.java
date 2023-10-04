@@ -116,7 +116,7 @@ public class ExpensesControllerAddingTest {
         );
 
         // Setup - expectations
-        doThrow(new InvalidSessionTokenException()).when(authService).validateAuthentication(any());
+        doThrow(new InvalidSessionTokenException()).when(authService).validateSession(any());
 
         // exercise
         MockHttpServletResponse response = postExpenseAddToControllerWithCookie(request, sessionCookie);

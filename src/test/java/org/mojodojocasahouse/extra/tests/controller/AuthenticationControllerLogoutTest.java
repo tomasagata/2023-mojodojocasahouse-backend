@@ -88,7 +88,7 @@ public class AuthenticationControllerLogoutTest {
         );
 
         // Setup - expectations
-        doThrow(new InvalidSessionTokenException()).when(service).validateAuthentication(any());
+        doThrow(new InvalidSessionTokenException()).when(service).validateSession(any());
 
         // exercise
         MockHttpServletResponse response = requestLogoutToControllerWithCookie(requestCookie);

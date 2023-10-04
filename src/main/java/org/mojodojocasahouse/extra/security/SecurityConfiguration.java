@@ -1,4 +1,4 @@
-package org.mojodojocasahouse.extra.configuration;
+package org.mojodojocasahouse.extra.security;
 
 import org.springframework.context.annotation.Configuration;
 

@@ -10,8 +10,11 @@ import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
 import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
 import org.mojodojocasahouse.extra.exception.SessionAlreadyRevokedException;
 import org.mojodojocasahouse.extra.model.ExtraUser;
+import org.mojodojocasahouse.extra.model.RememberMeCookie;
+import org.mojodojocasahouse.extra.model.RememberMeToken;
 import org.mojodojocasahouse.extra.model.SessionToken;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
+import org.mojodojocasahouse.extra.repository.RememberMeTokenRepository;
 import org.mojodojocasahouse.extra.repository.SessionTokenRepository;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -26,9 +29,12 @@ public class AuthenticationService {
 
     private final SessionTokenRepository sessionRepository;
 
-    public AuthenticationService(ExtraUserRepository userRepository, SessionTokenRepository sessionRepository) {
+    private final RememberMeTokenRepository rememberMeTokenRepository;
+
+    public AuthenticationService(ExtraUserRepository userRepository, SessionTokenRepository sessionRepository, RememberMeTokenRepository rememberMeTokenRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
+        this.rememberMeTokenRepository = rememberMeTokenRepository;
     }
 
     public ApiResponse registerUser(UserRegistrationRequest userRegistrationRequest)
@@ -72,6 +78,27 @@ public class AuthenticationService {
         );
     }
 
+    public Pair<ApiResponse, Cookie> authenticateUser(String rememberMeCookie) throws InvalidCredentialsException{
+        // create RememberMeCookie object from request
+        RememberMeCookie cookie = RememberMeCookie.from(rememberMeCookie);
+
+        // Get RememberMeToken from repository
+        RememberMeToken token = rememberMeTokenRepository
+                .findBySelector(cookie.getSelector())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        // Validate token
+        token.validate(cookie.getSelector(), cookie.getPasswordHashHex());
+
+        Cookie sessionCookie = createNewSession(token.getUser());
+
+        // Return successful response if user found
+        return Pair.of(
+                new ApiResponse("Login Success"),
+                sessionCookie
+        );
+    }
+
     public Cookie createNewSession(ExtraUser linkedUser){
         UUID sessionId = sessionRepository.save(
                 new SessionToken(linkedUser)
@@ -88,7 +115,7 @@ public class AuthenticationService {
         sessionRepository.save(token);
     }
 
-    public void validateAuthentication(UUID sessionId) throws InvalidSessionTokenException {
+    public void validateSession(UUID sessionId) throws InvalidSessionTokenException {
         SessionToken token = sessionRepository.findById(sessionId).orElseThrow(InvalidSessionTokenException::new);
         token.validate();
     }

@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,6 +82,75 @@ public class AuthenticationControllerLoginTest {
         // Verify
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
+    }
+
+    @Test
+    public void testAuthenticatingViaRememberMeCookieNoUserAuthenticationRequestReturnsASuccessfulResponse() throws Exception{
+        // Setup - data
+        Cookie rememberMeCookie = new Cookie("remember-me", "selector:secret");
+        ApiResponse expectedResponse = new ApiResponse(
+                "Login Success"
+        );
+        Cookie expectedCookie = new Cookie(
+                "JSESSIONID",
+                "123e4567-e89b-12d3-a456-426655440000"
+        );
+
+        // Setup - expectations
+        given(service.authenticateUser(any(String.class))).willReturn(Pair.of(expectedResponse, expectedCookie));
+
+        // exercise
+        MockHttpServletResponse response = postLoginEndpointWithCookie(rememberMeCookie);
+
+        // Verify
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
+
+    }
+
+    @Test
+    public void testAuthenticatingWithNoParametersReturnsError() throws Exception{
+        // Setup - data
+        ApiError expectedError = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                "Authentication Error",
+                "Request cannot be empty"
+        );
+
+        // exercise
+        MockHttpServletResponse response = postLoginEndpoint();
+
+        // Verify
+        assertThatResponseReturnsError(response, expectedError);
+    }
+
+
+    @Test
+    public void testAuthenticatingViaRememberMeCookieAndUserAuthenticationRequestReturnsASuccessfulResponse() throws Exception{
+        // Setup - data
+        Cookie rememberMeCookie = new Cookie("remember-me", "selector:secret");
+        UserAuthenticationRequest request = new UserAuthenticationRequest(
+                "mj@me.com",
+                "SomePassword1!"
+        );
+        ApiResponse expectedResponse = new ApiResponse(
+                "Login Success"
+        );
+        Cookie expectedCookie = new Cookie(
+                "JSESSIONID",
+                "123e4567-e89b-12d3-a456-426655440000"
+        );
+
+        // Setup - expectations
+        given(service.authenticateUser(any(String.class))).willReturn(Pair.of(expectedResponse, expectedCookie));
+
+        // exercise
+        MockHttpServletResponse response = postUserAuthenticationRequestToControllerWithCookie(request, rememberMeCookie);
+
+        // Verify
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.getContentAsString()).isEqualTo(jsonApiResponse.write(expectedResponse).getJson());
+
     }
 
     @Test
@@ -284,6 +354,34 @@ public class AuthenticationControllerLoginTest {
         return mvc.perform(MockMvcRequestBuilders.
                         post("/login")
                         .content(asJsonString(userAuthenticationRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andReturn().getResponse();
+    }
+
+    private MockHttpServletResponse postUserAuthenticationRequestToControllerWithCookie(UserAuthenticationRequest userAuthenticationRequest, Cookie c) throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.
+                        post("/login")
+                        .cookie(c)
+                        .content(asJsonString(userAuthenticationRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andReturn().getResponse();
+    }
+
+    private MockHttpServletResponse postLoginEndpointWithCookie(Cookie cookie) throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.
+                        post("/login")
+                        .cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL))
+                .andReturn().getResponse();
+    }
+
+
+    private MockHttpServletResponse postLoginEndpoint() throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.
+                        post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL))
                 .andReturn().getResponse();

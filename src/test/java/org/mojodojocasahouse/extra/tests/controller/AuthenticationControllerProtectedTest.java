@@ -85,7 +85,7 @@ public class AuthenticationControllerProtectedTest {
         );
 
         // Setup - expectations
-        doThrow(new InvalidSessionTokenException()).when(service).validateAuthentication(any());
+        doThrow(new InvalidSessionTokenException()).when(service).validateSession(any());
 
         // exercise
         MockHttpServletResponse response = getProtectedResourceWithCookie(sessionCookie);

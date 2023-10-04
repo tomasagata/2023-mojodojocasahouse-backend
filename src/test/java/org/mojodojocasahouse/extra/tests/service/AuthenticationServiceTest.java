@@ -176,7 +176,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
 
         // assertions
-        Assertions.assertThatNoException().isThrownBy(() -> serv.validateAuthentication(validSessionId));
+        Assertions.assertThatNoException().isThrownBy(() -> serv.validateSession(validSessionId));
 
     }
 
@@ -189,7 +189,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.empty());
 
         // assertions
-        Assertions.assertThatThrownBy(() -> serv.validateAuthentication(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
+        Assertions.assertThatThrownBy(() -> serv.validateSession(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
 
     }
 
@@ -215,7 +215,7 @@ public class AuthenticationServiceTest {
         given(tokenRepository.findById(any())).willReturn(Optional.of(linkedSessionToken));
 
         // assertions
-        Assertions.assertThatThrownBy(() -> serv.validateAuthentication(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
+        Assertions.assertThatThrownBy(() -> serv.validateSession(validSessionId)).isInstanceOf(InvalidSessionTokenException.class);
 
     }
 
