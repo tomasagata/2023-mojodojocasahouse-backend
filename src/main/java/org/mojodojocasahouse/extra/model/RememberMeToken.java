@@ -44,7 +44,7 @@ public class RememberMeToken {
         this.expirationDate = Timestamp.from(
                 new Timestamp(System.currentTimeMillis())
                         .toInstant()
-                        .plus(2, ChronoUnit.WEEKS)
+                        .plus(14, ChronoUnit.DAYS)
         );
         this.selector = DigestUtils.sha256Hex(this.user.getEmail() + ':' + this.expirationDate);
         this.validator = DigestUtils.sha256Hex(this.selector + ':' + user.getPassword());
