@@ -8,9 +8,6 @@ import java.util.Set;
 
 import org.mojodojocasahouse.extra.dto.UserRegistrationRequest;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
 @Table(name = "USERS")
 @Getter
@@ -35,6 +32,14 @@ public class ExtraUser {
     @Setter
     @Column(name = "PASSWORD", nullable = false)
     private String password;
+
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "USER_AUTHORITIES",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")}
+    )
+    private Set<Authority> authorities;
 
     public ExtraUser() {}
 

@@ -42,7 +42,7 @@ public class ExtraExpenseTest {
                 Date.valueOf("2018-12-9")
         );
 
-        Assertions.assertThat(unmanagedExpense.getUserId()).isEqualTo(unmanagedUser);
+        Assertions.assertThat(unmanagedExpense.getUser()).isEqualTo(unmanagedUser);
     }
     @Test
     void testGettingConceptOfMadridTripExpenseReturnsMadridTrip() {

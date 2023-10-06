@@ -1,16 +1,22 @@
 package org.mojodojocasahouse.extra.exception.handler;
 
-import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
-import org.mojodojocasahouse.extra.exception.InvalidCredentialsException;
-import org.mojodojocasahouse.extra.exception.InvalidSessionTokenException;
+import org.mojodojocasahouse.extra.exception.*;
 import org.mojodojocasahouse.extra.dto.ApiError;
-import org.mojodojocasahouse.extra.exception.MissingRequestParameterException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
+import org.springframework.security.web.authentication.rememberme.CookieTheftException;
+import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
+import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -56,28 +62,18 @@ public class UserAuthenticationExceptionHandler extends ResponseEntityExceptionH
         return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
     }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
-    protected ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex, WebRequest request){
-        ApiError apiError = new ApiError(
-                HttpStatus.UNAUTHORIZED,
-                "Authentication Error",
-                ex.getMessage()
-        );
-        return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
-    }
-
-    @ExceptionHandler(MissingRequestParameterException.class)
-    protected ResponseEntity<Object> handleInvalidCredentials(MissingRequestParameterException ex, WebRequest request){
-        ApiError apiError = new ApiError(
-                HttpStatus.BAD_REQUEST,
-                "Authentication Error",
-                ex.getMessage()
-        );
-        return  handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
-    }
-
-    @ExceptionHandler(InvalidSessionTokenException.class)
-    protected ResponseEntity<Object> handleInvalidSessionToken(InvalidSessionTokenException ex, WebRequest request){
+    @ExceptionHandler({
+            InsufficientAuthenticationException.class,
+            ProviderNotFoundException.class,
+            AuthenticationCredentialsNotFoundException.class,
+            BadCredentialsException.class,
+            NonceExpiredException.class,
+            PreAuthenticatedCredentialsNotFoundException.class,
+            SessionAuthenticationException.class,
+            UsernameNotFoundException.class
+    })
+    protected ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex,
+                                                                   WebRequest request){
         ApiError apiError = new ApiError(
                 HttpStatus.UNAUTHORIZED,
                 "Authentication Error",
@@ -86,11 +82,44 @@ public class UserAuthenticationExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
     }
 
-    @ExceptionHandler(MissingRequestCookieException.class)
-    protected ResponseEntity<Object> handleMissingRequestCookie(MissingRequestCookieException ex, WebRequest request){
+    @ExceptionHandler({
+            AccountExpiredException.class,
+            CredentialsExpiredException.class,
+            DisabledException.class,
+            LockedException.class
+    })
+    protected ResponseEntity<Object> handleAccountStatusException(AccountStatusException ex, WebRequest request){
         ApiError apiError = new ApiError(
                 HttpStatus.UNAUTHORIZED,
-                "Authentication Error",
+                "Account Status Error",
+                ex.getMessage()
+        );
+        return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
+    }
+
+    @ExceptionHandler({
+            CookieTheftException.class, // Why not?
+            InvalidCookieException.class
+    })
+    protected ResponseEntity<Object> handleRememberMeAuthenticationException(RememberMeAuthenticationException ex,
+                                                                             WebRequest request){
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                "RememberMe Authentication Error",
+                ex.getMessage()
+        );
+        return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
+    }
+
+    @ExceptionHandler({
+            AuthenticationServiceException.class,
+            InternalAuthenticationServiceException.class
+    })
+    protected ResponseEntity<Object> handleInternalAuthenticationServiceException(
+            InternalAuthenticationServiceException ex, WebRequest request){
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                "Authentication Service Error",
                 ex.getMessage()
         );
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
