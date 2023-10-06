@@ -53,8 +53,8 @@ public class ExpensesServiceTest {
                 "mj@me.com",
                 "Somepassword1!"
         );
-        ExtraExpense savedExpense1 = new ExtraExpense(user, "Another Concept", new BigDecimal("10.11"), Date.valueOf("2023-09-11"));
-        ExtraExpense savedExpense2 = new ExtraExpense(user, "Another Concept", new BigDecimal("10.12"), Date.valueOf("2023-09-12"));
+        ExtraExpense savedExpense1 = new ExtraExpense(user, "Another Concept", new BigDecimal("10.11"), Date.valueOf("2023-09-11"), "test",(short) 1);
+        ExtraExpense savedExpense2 = new ExtraExpense(user, "Another Concept", new BigDecimal("10.12"), Date.valueOf("2023-09-12"), "test",(short) 1);
 
         List<ExtraExpense> expectedExpenses = List.of(
                 savedExpense1, savedExpense2
@@ -98,7 +98,9 @@ public class ExpensesServiceTest {
         ExpenseAddingRequest request = new ExpenseAddingRequest(
                 "A Concept",
                 new BigDecimal("10.12"),
-                Date.valueOf("2023-09-19")
+                Date.valueOf("2023-09-19"),
+                "test",
+                (short) 1
         );
         ExtraUser user = new ExtraUser(
                 "Michael",

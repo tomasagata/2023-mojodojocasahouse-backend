@@ -33,4 +33,12 @@ public class ExpenseService {
         List<ExtraExpense> expenseObjects =  expenseRepository.findAllExpensesByUserId(user);
         return expenseObjects.stream().map(ExtraExpense::asDto).collect(Collectors.toList());
     }
+
+    public List<ExtraExpense> getAllExpensesByCategoryByUserId(ExtraUser user, String category) {
+        return expenseRepository.findAllExpensesByUserIdAndCategory(user, category);
+    }
+
+    public List<String> getAllCategories(ExtraUser user) {
+        return expenseRepository.findAllDistinctCategoriesByUserId(user);
+    }
 }

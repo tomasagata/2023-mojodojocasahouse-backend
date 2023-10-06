@@ -33,13 +33,21 @@ public class ExtraExpense{
     @Column(name="DATE", nullable = false)
     private Date date;
 
+    @Column(name="CATEGORY", nullable = false)
+    private String category;
+
+    @Column(name="ICON_ID", nullable = false)
+    private Short iconId;
+
     public ExtraExpense(){}
 
-    public ExtraExpense(ExtraUser user, String concept, BigDecimal amount, Date date){
+    public ExtraExpense(ExtraUser user, String concept, BigDecimal amount, Date date, String category, Short iconId){
         this.user = user;
         this.concept = concept;
         this.amount = amount;
         this.date = date;
+        this.category = category;
+        this.iconId = iconId;
     }
 
     public static ExtraExpense from(ExpenseAddingRequest expenseAddingRequest, ExtraUser user) {
@@ -47,7 +55,9 @@ public class ExtraExpense{
                 user,
                 expenseAddingRequest.getConcept(),
                 expenseAddingRequest.getAmount(),
-                expenseAddingRequest.getDate()
+                expenseAddingRequest.getDate(),
+                expenseAddingRequest.getCategory(),
+                expenseAddingRequest.getIconId()
         );
     }
 
@@ -57,7 +67,9 @@ public class ExtraExpense{
                 this.user.getId(),
                 this.concept,
                 this.amount,
-                this.date
+                this.date,
+                this.category,
+                this.iconId
         );
     }
 

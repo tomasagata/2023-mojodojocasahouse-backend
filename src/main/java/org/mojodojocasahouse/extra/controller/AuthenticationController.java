@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +32,12 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/login", produces = "application/json")
-    public ResponseEntity<ApiResponse> remember()
-    {
+    public ResponseEntity<ApiResponse> login() {
         return new ResponseEntity<>(
                 new ApiResponse("Login successful"),
                 HttpStatus.OK
         );
     }
-
 
     @GetMapping(path = "/protected", produces = "application/json")
     public ResponseEntity<ApiResponse> protectedResource()

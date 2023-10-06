@@ -77,7 +77,9 @@ public class ExpensesControllerAddingTest {
         ExpenseAddingRequest request = new ExpenseAddingRequest(
             "test",
             new BigDecimal(100),
-            Date.valueOf("2018-12-09")
+            Date.valueOf("2018-12-09"),
+            "test",
+            (short) 1
         );
         ExtraUser linkedUser = new ExtraUser(
                 "M",
@@ -108,7 +110,9 @@ public class ExpensesControllerAddingTest {
         ExpenseAddingRequest request = new ExpenseAddingRequest(
                 "test",
                 new BigDecimal(100),
-                Date.valueOf("2018-12-09")
+                Date.valueOf("2018-12-09"),
+                "test",
+                (short) 1
         );
         Cookie sessionCookie = new Cookie(
                 "JSESSIONID",
@@ -160,7 +164,9 @@ public class ExpensesControllerAddingTest {
         ExpenseAddingRequest request = new ExpenseAddingRequest(
                 "test",
                 new BigDecimal(100),
-                Date.valueOf("2018-12-09")
+                Date.valueOf("2018-12-09"),
+                "Test",
+                (short) 1
         );
         ApiError expectedError = new ApiError(
                 HttpStatus.UNAUTHORIZED,
