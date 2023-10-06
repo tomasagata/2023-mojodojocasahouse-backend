@@ -5,10 +5,13 @@ import jakarta.servlet.http.Cookie;
 import org.apache.commons.codec.binary.Base64;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mojodojocasahouse.extra.configuration.SecurityConfiguration;
 import org.mojodojocasahouse.extra.controller.AuthenticationController;
+import org.mojodojocasahouse.extra.controller.ExpensesController;
 import org.mojodojocasahouse.extra.dto.ApiError;
 import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
@@ -25,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -34,7 +38,6 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(AuthenticationController.class)
 @Import({
         DelegatingBasicAuthenticationEntryPoint.class,
@@ -60,7 +63,7 @@ public class AuthenticationControllerProtectedTest {
     public AuthenticationController controller;
 
 
-    @Before
+    @BeforeEach
     public void setup() {
         JacksonTester.initFields(this, new ObjectMapper());
     }

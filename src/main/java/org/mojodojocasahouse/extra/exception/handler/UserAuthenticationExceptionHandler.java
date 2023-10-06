@@ -47,7 +47,11 @@ public class UserAuthenticationExceptionHandler extends ResponseEntityExceptionH
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(@NonNull HttpMessageNotReadableException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request){
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Failed to read request", "Malformed Request");
+        ApiError apiError = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                "Failed to read request",
+                "Malformed Request"
+        );
         return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
     }
 

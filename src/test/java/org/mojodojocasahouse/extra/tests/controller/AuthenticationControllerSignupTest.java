@@ -2,9 +2,8 @@ package org.mojodojocasahouse.extra.tests.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mojodojocasahouse.extra.configuration.SecurityConfiguration;
 import org.mojodojocasahouse.extra.controller.AuthenticationController;
 import org.mojodojocasahouse.extra.dto.ApiError;
@@ -23,7 +22,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -32,7 +30,6 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(AuthenticationController.class)
 @Import({
         DelegatingBasicAuthenticationEntryPoint.class,
@@ -58,7 +55,7 @@ public class AuthenticationControllerSignupTest {
     public AuthenticationController controller;
 
 
-    @Before
+    @BeforeEach
     public void setup() {
         JacksonTester.initFields(this, new ObjectMapper());
     }
