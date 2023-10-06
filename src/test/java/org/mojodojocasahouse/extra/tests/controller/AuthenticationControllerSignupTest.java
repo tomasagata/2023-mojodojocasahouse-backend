@@ -3,7 +3,6 @@ package org.mojodojocasahouse.extra.tests.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mojodojocasahouse.extra.configuration.SecurityConfiguration;

@@ -1,6 +1,5 @@
 package org.mojodojocasahouse.extra.tests.service;
 
-import org.junit.jupiter.api.Test;
 import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.model.ExtraUser;

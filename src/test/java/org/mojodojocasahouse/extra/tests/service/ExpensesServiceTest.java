@@ -4,6 +4,7 @@ package org.mojodojocasahouse.extra.tests.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -38,14 +38,14 @@ public class ExpensesServiceTest {
     @InjectMocks
     private ExpenseService expenseService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         JacksonTester.initFields(this, new ObjectMapper());
     }
 
 
     @Test
-    public void testGettingAllExpensesByExistingUserIdReturnsList() throws IOException {
+    public void testGettingAllExpensesByExistingUserIdReturnsList() {
         // Setup - data
         ExtraUser user = new ExtraUser(
                 "Michael",

@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.sql.Date;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 public class ExpenseDTO {

@@ -23,7 +23,7 @@ public class DelegatingBasicAuthenticationEntryPoint implements AuthenticationEn
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
+                         AuthenticationException authException){
         response.addHeader("WWW-Authenticate", "Basic realm=\"extra\"");
         resolver.resolveException(request, response, null, authException);
     }

@@ -12,7 +12,6 @@ import org.mojodojocasahouse.extra.controller.ExpensesController;
 import org.mojodojocasahouse.extra.dto.ApiError;
 import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseDTO;
-import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.mojodojocasahouse.extra.security.DelegatingBasicAuthenticationEntryPoint;
@@ -126,10 +125,6 @@ public class ExpensesControllerListingTest {
     @Test
     public void testListingExpensesWithInvalidUsernameAndPasswordThrowsError() throws Exception {
         // Setup - data
-        Cookie sessionCookie = new Cookie(
-                "JSESSIONID",
-                "123e4567-e89b-12d3-a456-426655440000"
-        );
         ApiError expectedError = new ApiError(
                 HttpStatus.UNAUTHORIZED,
                 "Authentication Error",

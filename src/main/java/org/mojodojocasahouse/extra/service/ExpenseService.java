@@ -1,7 +1,6 @@
 package org.mojodojocasahouse.extra.service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -12,8 +11,6 @@ import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraExpenseRepository;
 import org.springframework.stereotype.Service;
-
-import jakarta.validation.Valid;
 
 @Service
 @RequiredArgsConstructor
