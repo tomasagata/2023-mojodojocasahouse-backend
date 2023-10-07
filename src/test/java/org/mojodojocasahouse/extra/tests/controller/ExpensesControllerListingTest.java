@@ -11,6 +11,7 @@ import org.mojodojocasahouse.extra.controller.ExpensesController;
 import org.mojodojocasahouse.extra.dto.ApiError;
 import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseDTO;
+import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.mojodojocasahouse.extra.security.DelegatingBasicAuthenticationEntryPoint;

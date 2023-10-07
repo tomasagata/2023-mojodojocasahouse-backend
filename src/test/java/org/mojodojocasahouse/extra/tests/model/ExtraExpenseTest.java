@@ -105,6 +105,27 @@ public class ExtraExpenseTest {
 
         Assertions.assertThat(unmanagedExpense.getDate()).isEqualTo(Date.valueOf("2018-12-9"));
     }
+
+    @Test
+    void testGettingIdOfMadridTripExpenseReturnsTravel() {
+        ExtraUser unmanagedUser = new ExtraUser(
+                "Michael",
+                "Jordan",
+                "michaelj@gmail.com",
+                "somepassword"
+        );
+        ExtraExpense unmanagedExpense = new ExtraExpense(
+                unmanagedUser,
+                "Madrid trip",
+                new BigDecimal(100),
+                Date.valueOf("2018-12-9"),
+                "travel",
+                (short) 1
+        );
+
+        Assertions.assertThat(unmanagedExpense.getCategory()).isEqualTo("travel");
+    }
+
     @Test
     void testGettingIconofMadridTripExpenseReturnsShortOne() {
         ExtraUser unmanagedUser = new ExtraUser(

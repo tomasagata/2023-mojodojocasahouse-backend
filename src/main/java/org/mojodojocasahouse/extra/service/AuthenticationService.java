@@ -48,9 +48,7 @@ public class AuthenticationService {
     private void validateEmailUniqueness(UserRegistrationRequest userRequest) throws ExistingUserEmailException{
         userRepository
                 .findByEmail(userRequest.getEmail())
-                .ifPresent(
-                        s -> {throw new ExistingUserEmailException();}
-                );
+                .ifPresent(s -> {throw new ExistingUserEmailException();});
     }
 
     public ApiResponse changePassword(ExtraUser user, @Valid UserChangePasswordRequest userChangePasswordRequest) {

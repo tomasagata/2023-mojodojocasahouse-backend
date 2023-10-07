@@ -28,17 +28,17 @@ public class ExpenseService {
         return new ApiResponse("Expense added succesfully!");
     }
 
-    //get all expenses of the user that is making the request
     public List<ExpenseDTO> getAllExpensesByUserId(ExtraUser user) {
-        List<ExtraExpense> expenseObjects =  expenseRepository.findAllExpensesByUserId(user);
+        List<ExtraExpense> expenseObjects = expenseRepository.findAllExpensesByUser(user);
         return expenseObjects.stream().map(ExtraExpense::asDto).collect(Collectors.toList());
     }
 
-    public List<ExtraExpense> getAllExpensesByCategoryByUserId(ExtraUser user, String category) {
-        return expenseRepository.findAllExpensesByUserIdAndCategory(user, category);
+    public List<ExpenseDTO> getAllExpensesByCategoryByUserId(ExtraUser user, String category) {
+        List<ExtraExpense> expenseObjects = expenseRepository.findAllExpensesByUserAndCategory(user, category);
+        return expenseObjects.stream().map(ExtraExpense::asDto).collect(Collectors.toList());
     }
 
     public List<String> getAllCategories(ExtraUser user) {
-        return expenseRepository.findAllDistinctCategoriesByUserId(user);
+        return expenseRepository.findAllDistinctCategoriesByUser(user);
     }
 }

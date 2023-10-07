@@ -50,6 +50,14 @@ public class ExtraUser {
         this.password = password;
     }
 
+    public ExtraUser(String firstName, String lastName, String email, String password, Set<Authority> authorities) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
     public static ExtraUser from(UserRegistrationRequest userRegistrationDto, String encodedPassword){
         return new ExtraUser(
                 userRegistrationDto.getFirstName(),

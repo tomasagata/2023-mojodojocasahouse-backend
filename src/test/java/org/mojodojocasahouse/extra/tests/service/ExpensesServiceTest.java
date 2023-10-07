@@ -3,7 +3,6 @@ package org.mojodojocasahouse.extra.tests.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +18,6 @@ import org.mojodojocasahouse.extra.repository.ExtraExpenseRepository;
 import org.mojodojocasahouse.extra.service.ExpenseService;
 import org.springframework.boot.test.json.JacksonTester;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
@@ -61,7 +59,7 @@ public class ExpensesServiceTest {
         );
 
         // Setup - expectations
-        given(expenseRepository.findAllExpensesByUserId(any())).willReturn(expectedExpenses);
+        given(expenseRepository.findAllExpensesByUser(any())).willReturn(expectedExpenses);
 
         // exercise
         List<ExpenseDTO> foundExpenseDtos = expenseService.getAllExpensesByUserId(user);
@@ -83,7 +81,7 @@ public class ExpensesServiceTest {
         );
 
         // Setup - expectations
-        given(expenseRepository.findAllExpensesByUserId(any())).willReturn(List.of());
+        given(expenseRepository.findAllExpensesByUser(any())).willReturn(List.of());
 
         // exercise
         List<ExpenseDTO> foundExpenses = expenseService.getAllExpensesByUserId(user);

@@ -1,6 +1,5 @@
 package org.mojodojocasahouse.extra.controller;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
 import org.mojodojocasahouse.extra.dto.ExpenseDTO;
 import org.mojodojocasahouse.extra.dto.ExpenseFilteringRequest;
-import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.service.AuthenticationService;
 import org.mojodojocasahouse.extra.service.ExpenseService;
@@ -33,10 +31,8 @@ public class ExpensesController {
 
 
     @PostMapping(value = "/addExpense", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> addExpense(
-            Principal principal,
-            @Valid @RequestBody ExpenseAddingRequest expenseAddingRequest
-    ){
+    public ResponseEntity<Object> addExpense(Principal principal,
+                                             @Valid @RequestBody ExpenseAddingRequest expenseAddingRequest){
         ExtraUser user = userService.getUserByPrincipal(principal);
         ApiResponse response = expenseService.addExpense(user, expenseAddingRequest);
         return new ResponseEntity<>(
@@ -49,24 +45,11 @@ public class ExpensesController {
     public ResponseEntity<List<ExpenseDTO>> getMyExpenses(Principal principal){
         ExtraUser user = userService.getUserByPrincipal(principal);
 
-        log.info("Retrieving expenses of user: " + principal.getName());
+        log.debug("Retrieving all expenses of user: \"" + principal.getName() + "\"");
 
-        List <ExtraExpense> listOfExpenses = expenseService.getAllExpensesByUserId(user);
-        // Convert ExtraExpense entities to ExpenseDTO
-        List<ExpenseDTO> expenseDTOs = new ArrayList<>();
-        for (ExtraExpense expense : listOfExpenses) {
-            ExpenseDTO expenseDTO = new ExpenseDTO(null, null, null, null, null, null, null);
-            expenseDTO.setId(expense.getId());
-            expenseDTO.setUserId(expense.getUser().getId());
-            expenseDTO.setConcept(expense.getConcept());
-            expenseDTO.setAmount(expense.getAmount());
-            expenseDTO.setDate(expense.getDate());
-            expenseDTO.setCategory(expense.getCategory());
-            expenseDTO.setIconId(expense.getIconId());
-            expenseDTOs.add(expenseDTO);
-        }
+        List <ExpenseDTO> listOfExpenses = expenseService.getAllExpensesByUserId(user);
     
-        return ResponseEntity.ok(expenseDTOs);
+        return ResponseEntity.ok(listOfExpenses);
     }
 
     @PostMapping(path = "/getMyExpensesByCategory", consumes = "application/json", produces = "application/json")
@@ -75,21 +58,11 @@ public class ExpensesController {
         ExtraUser user = userService.getUserByPrincipal(principal);
         String category = expenseFilteringRequest.getCategory();
 
-        List <ExtraExpense> listOfExpenses = expenseService.getAllExpensesByCategoryByUserId(user, category);
-        // Convert ExtraExpense entities to ExpenseDTO
-        List<ExpenseDTO> expenseDTOs = new ArrayList<>();
-        for (ExtraExpense expense : listOfExpenses) {
-            ExpenseDTO expenseDTO = new ExpenseDTO(null, null, null, null, null, null,null);
-            expenseDTO.setId(expense.getId());
-            expenseDTO.setUserId(expense.getUser().getId());
-            expenseDTO.setConcept(expense.getConcept());
-            expenseDTO.setAmount(expense.getAmount());
-            expenseDTO.setDate(expense.getDate());
-            expenseDTO.setCategory(expense.getCategory());
-            expenseDTO.setIconId(expense.getIconId());
-            expenseDTOs.add(expenseDTO);
-        }
-        return ResponseEntity.ok(expenseDTOs);
+        log.debug("Retrieving expenses of user: \"" + principal.getName() + "\" by category: \"" + category + "\"");
+
+        List<ExpenseDTO> listOfExpenses = expenseService.getAllExpensesByCategoryByUserId(user, category);
+
+        return ResponseEntity.ok(listOfExpenses);
     }
 
 

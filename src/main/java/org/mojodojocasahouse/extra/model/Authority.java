@@ -2,6 +2,7 @@ package org.mojodojocasahouse.extra.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
 
@@ -17,4 +18,14 @@ public class Authority {
 
     @ManyToMany(mappedBy = "authorities")
     private Set<ExtraUser> users;
+
+    public Authority(String role){
+        this.role = role;
+    }
+
+    public Authority(String role, Set<ExtraUser> users){
+        this.role = role;
+        this.users = users;
+    }
+
 }
