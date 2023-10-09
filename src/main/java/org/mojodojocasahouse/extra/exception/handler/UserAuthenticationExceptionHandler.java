@@ -128,4 +128,16 @@ public class UserAuthenticationExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
     }
 
+    @ExceptionHandler(InvalidPasswordResetTokenException.class)
+    protected ResponseEntity<Object> handleInvalidPasswordResetTokenException(InvalidPasswordResetTokenException ex,
+                                                                              WebRequest request){
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid Token Error",
+                ex.getMessage()
+        );
+        return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
+
+    }
+
 }

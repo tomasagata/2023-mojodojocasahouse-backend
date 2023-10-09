@@ -41,6 +41,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/logout").authenticated()
                         .requestMatchers("/login").fullyAuthenticated()
                         .requestMatchers("/auth/password/change").fullyAuthenticated()
+                        .requestMatchers("/auth/forgotten").permitAll()
+                        .requestMatchers("/auth/forgotten/reset").permitAll()
                         .requestMatchers("/register*").permitAll()
                 )
                 .httpBasic(httpBasic -> httpBasic

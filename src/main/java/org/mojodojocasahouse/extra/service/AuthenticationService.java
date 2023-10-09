@@ -3,6 +3,7 @@ package org.mojodojocasahouse.extra.service;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.exception.ExistingUserEmailException;
 import org.mojodojocasahouse.extra.exception.InvalidPasswordResetTokenException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -78,6 +80,8 @@ public class AuthenticationService {
         Optional<ExtraUser> foundUser = userRepository.findByEmail(request.getEmail());
 
         if(foundUser.isPresent()){
+            log.debug("SendPasswordResetEmail: User \"" + request.getEmail() + "\" found.");
+
             ExtraUser user = foundUser.get();
             PasswordResetToken token = tokenRepository.save(
                     new PasswordResetToken(user)
@@ -90,9 +94,12 @@ public class AuthenticationService {
             message.setText(
                     "Please tap the following link on your phone " +
                     "with the app installed to reset your password: \n" +
-                            "extra://reset-password/" + token.getId() + " \nLink is valid for only 15 minutes.");
+                            "<a>extra://reset-password/" + token.getId() + "</a> \nLink is valid for only 15 minutes.");
 
             mailSender.send(message);
+        }
+        else{
+            log.debug("SendPasswordResetEmail: User \"" + request.getEmail() + "\" NOT found.");
         }
 
         return new ApiResponse("If user is registered, an email was sent. Check inbox");
