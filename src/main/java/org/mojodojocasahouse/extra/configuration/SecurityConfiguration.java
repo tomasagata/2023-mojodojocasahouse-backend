@@ -35,6 +35,8 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/getMyExpenses").authenticated()
+                        .requestMatchers("/getMyExpensesByCategory").authenticated()
+                        .requestMatchers("/getAllCategories").authenticated()
                         .requestMatchers("/addExpense").authenticated()
                         .requestMatchers("/protected").authenticated()
                         .requestMatchers("/fullyProtected").fullyAuthenticated()
