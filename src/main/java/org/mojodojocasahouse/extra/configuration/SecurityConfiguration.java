@@ -2,7 +2,6 @@ package org.mojodojocasahouse.extra.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.mojodojocasahouse.extra.security.DelegatingBasicAuthenticationEntryPoint;
-import org.mojodojocasahouse.extra.security.ExtraUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final ExtraUserDetailsService userDetailsService;
 
     private final DelegatingBasicAuthenticationEntryPoint authenticationEntryPoint;
 
@@ -46,6 +44,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/forgotten").permitAll()
                         .requestMatchers("/auth/forgotten/reset").permitAll()
                         .requestMatchers("/register*").permitAll()
+                        .requestMatchers("/editExpense").permitAll()
+                        .requestMatchers("expenses/{id}").permitAll()
                 )
                 .httpBasic(httpBasic -> httpBasic
                         .realmName("extra")

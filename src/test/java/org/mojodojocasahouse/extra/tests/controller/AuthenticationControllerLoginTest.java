@@ -1,8 +1,6 @@
 package org.mojodojocasahouse.extra.tests.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
-import org.apache.commons.codec.binary.Base64;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.security.Principal;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(AuthenticationController.class)
 @Import({
@@ -72,7 +66,7 @@ public class AuthenticationControllerLoginTest {
     @WithMockUser
     public void testAccessingLoginEndpointWithValidCredentialsIsSuccessful() throws Exception {
         // Setup - data
-        ExtraUser user = new ExtraUser(
+        new ExtraUser(
                 "michael",
                 "jackson",
                 "mj@me.com",
@@ -111,25 +105,6 @@ public class AuthenticationControllerLoginTest {
     private MockHttpServletResponse loginNoCookie() throws Exception {
         return mvc.perform(MockMvcRequestBuilders.
                         post("/login")
-                        .accept(MediaType.ALL))
-                .andReturn().getResponse();
-    }
-
-    private MockHttpServletResponse loginWithCookie(Cookie cookie) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.
-                        post("/login")
-                        .cookie(cookie)
-                        .accept(MediaType.ALL))
-                .andReturn().getResponse();
-    }
-
-    private MockHttpServletResponse loginWithUsernameAndPassword(String username,
-                                                                                String password) throws Exception{
-        return mvc.perform(MockMvcRequestBuilders.
-                        post("/login")
-                        .header("Authorization",
-                                "Basic " + Base64
-                                        .encodeBase64String((username + ":" + password).getBytes()))
                         .accept(MediaType.ALL))
                 .andReturn().getResponse();
     }

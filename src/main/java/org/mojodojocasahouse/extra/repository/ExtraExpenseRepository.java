@@ -22,4 +22,6 @@ public interface ExtraExpenseRepository extends JpaRepository<ExtraExpense, Long
     List<String> findAllDistinctCategoriesByUser(@Param("userId") ExtraUser user);
 
     Optional<ExtraExpense> findByCategory(String category);
+
+    boolean existsByIdAndUser(Long id, ExtraUser user);
 }

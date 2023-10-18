@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mojodojocasahouse.extra.configuration.SecurityConfiguration;
 import org.mojodojocasahouse.extra.controller.ExpensesController;
 import org.mojodojocasahouse.extra.dto.ApiError;
-import org.mojodojocasahouse.extra.dto.ApiResponse;
 import org.mojodojocasahouse.extra.dto.ExpenseDTO;
-import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraUserRepository;
 import org.mojodojocasahouse.extra.security.DelegatingBasicAuthenticationEntryPoint;
@@ -37,7 +35,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 
 @WebMvcTest(ExpensesController.class)
 @Import({
@@ -51,8 +48,6 @@ public class ExpensesControllerListingTest {
     private MockMvc mvc;
 
     private JacksonTester<ApiError> jsonApiError;
-
-    private JacksonTester<ApiResponse> jsonApiResponse;
 
     private JacksonTester<List<ExpenseDTO>> jsonExpenseDtoList;
 
@@ -83,9 +78,6 @@ public class ExpensesControllerListingTest {
                 "J",
                 "mj@me.com",
                 "Somepassword"
-        );
-        List<ExtraExpense> expectedExpensesList = List.of(
-                new ExtraExpense(linkedUser, "A concept", new BigDecimal("10.12"), Date.valueOf("2022-12-09"), "Test",(short) 1)
         );
         List<ExpenseDTO> expectedResponse = List.of(
                 new ExpenseDTO(null, null, "A concept", new BigDecimal("10.12"), Date.valueOf("2022-12-09"), "Test",(short) 1)
