@@ -1,5 +1,7 @@
 package org.mojodojocasahouse.extra.controller;
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.sql.Date;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -87,6 +89,19 @@ public class ExpensesController {
         List <ExpenseDTO> listOfExpenses = expenseService.getAllExpensesByUserId(user);
     
         return ResponseEntity.ok(listOfExpenses);
+    }
+    // Get all expenses of a user by category and min_date and max_Date
+    @GetMapping(path = "/getSumOfExpensesOf/{category}/from/{min_date}/to/{max_date}" + //
+            "", produces = "application/json")
+    public ResponseEntity<BigDecimal> getExpensesByCategoryAndDate(Principal principal, @PathVariable String category, @PathVariable String min_date, @PathVariable String max_date){
+        ExtraUser user = userService.getUserByPrincipal(principal);
+        Date maxx_date= Date.valueOf(max_date);
+        Date minn_date= Date.valueOf(min_date);
+        log.debug("Retrieving all expenses of user: \"" + principal.getName() + "\"");
+
+        BigDecimal sumOfExpenses = expenseService.getSumOfExpensesByCategoryAndDate(user, category, minn_date, maxx_date);
+    
+        return ResponseEntity.ok(sumOfExpenses);
     }
 
     @PostMapping(path = "/getMyExpensesByCategory", consumes = "application/json", produces = "application/json")

@@ -1,5 +1,7 @@
 package org.mojodojocasahouse.extra.service;
 
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,6 +81,10 @@ public class ExpenseService {
 
     public boolean isOwner(ExtraUser user, Long id) {
         return expenseRepository.existsByIdAndUser(id, user);
+    }
+
+    public BigDecimal getSumOfExpensesByCategoryAndDate(ExtraUser user, String category, Date min_date, Date max_date) {
+        return expenseRepository.getSumOfExpensesOfAnUserByCategoryAndDateInterval(user, category, min_date, max_date);
     }
     
 }
