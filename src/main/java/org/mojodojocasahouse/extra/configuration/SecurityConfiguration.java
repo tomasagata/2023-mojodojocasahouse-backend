@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/editExpense").permitAll()
                         .requestMatchers("expenses/{id}").permitAll()
                         .requestMatchers("/getSumOfExpensesOf/{category}/from/{min_date}/to/{max_date}").permitAll()
+                        .requestMatchers("/getMyExpensesFrom").permitAll()
                 )
                 .httpBasic(httpBasic -> httpBasic
                         .realmName("extra")

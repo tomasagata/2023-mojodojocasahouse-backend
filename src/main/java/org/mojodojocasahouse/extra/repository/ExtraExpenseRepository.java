@@ -2,8 +2,10 @@ package org.mojodojocasahouse.extra.repository;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+
 import java.util.List;
 import java.util.Optional;
+
 
 import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
@@ -30,5 +32,15 @@ public interface ExtraExpenseRepository extends JpaRepository<ExtraExpense, Long
     @Query("SELECT COALESCE(SUM(e.amount), 0) " + "FROM ExtraExpense e " + "WHERE e.user = :user " + "AND e.category = :category " + "AND e.date BETWEEN :minDate AND :maxDate")
     BigDecimal getSumOfExpensesOfAnUserByCategoryAndDateInterval(@Param("user") ExtraUser user, @Param("category") String category, @Param("minDate") Date minDate,@Param("maxDate") Date maxDate
     );
+
+    @Query("SELECT SUM(e.amount) FROM ExtraExpense e WHERE e.user = :user AND e.category = :category")
+    BigDecimal getSumOfExpensesOfAnUserByCategory(@Param("user") ExtraUser user, @Param("category") String category);
+
+    @Query("SELECT SUM(e.amount) FROM ExtraExpense e WHERE e.user = :user AND e.category = :category AND e.date >= :minDate")
+    BigDecimal getSumOfExpensesOfAnUserAfterGivenDate(@Param("user") ExtraUser user, @Param("category") String category, @Param("minDate") Date minDate);
+    
+    @Query("SELECT SUM(e.amount) FROM ExtraExpense e WHERE e.user = :user AND e.category = :category AND e.date <= :maxDate")
+    BigDecimal getSumOfExpensesOfAnUserBeforeGivenDate(@Param("user") ExtraUser user, @Param("category") String category, @Param("maxDate") Date maxDate);
+    
 }
 

@@ -2,6 +2,7 @@ package org.mojodojocasahouse.extra.controller;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -126,6 +128,44 @@ public class ExpensesController {
 
         return ResponseEntity.ok(expenseService.getAllCategories(user));
     }
+
+    @GetMapping(path = "/getMyExpensesFrom", produces = "application/json")
+    public ResponseEntity<List<BigDecimal>> getExpensesByDateAndCategory(Principal principal,
+        @RequestParam(required = true) List<String> categories,
+        @RequestParam(required = false) String minDate, @RequestParam(required = false) String maxDate) {
+        ExtraUser user = userService.getUserByPrincipal(principal);
+    
+        Date minnDate = minDate != null ? Date.valueOf(minDate) : null;
+        Date maxxDate = maxDate != null ? Date.valueOf(maxDate) : null;
+    
+        log.debug("Retrieving expenses for user: \"" + principal.getName() + "\"");
+    
+        List<BigDecimal> categoryAmounts = new ArrayList<>();
+    
+        for (String category : categories) {
+            BigDecimal totalAmount;
+            if (minnDate != null && maxxDate == null) {
+                totalAmount = expenseService.getSumOfExpensesByCategoryAfterGivenDate(user, category, minnDate);
+            } else if (minnDate != null && maxxDate != null) {
+                totalAmount = expenseService.getSumOfExpensesByCategoryAndDate(user, category, minnDate, maxxDate);
+            } else if (minnDate == null && maxxDate != null) {
+                totalAmount = expenseService.getSumOfExpensesByCategoryBeforeGivenDate(user, category,maxxDate);
+            }
+            else {
+                totalAmount = expenseService.getSumOfExpensesByCategory(user, category);
+            }
+            if (totalAmount == null) {
+                totalAmount = BigDecimal.ZERO;
+            }
+            categoryAmounts.add(totalAmount);
+        }
+
+        return ResponseEntity.ok(categoryAmounts);
+    }
+    
+    
+    
+
 
 }
 

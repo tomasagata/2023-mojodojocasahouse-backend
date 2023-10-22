@@ -86,5 +86,22 @@ public class ExpenseService {
     public BigDecimal getSumOfExpensesByCategoryAndDate(ExtraUser user, String category, Date min_date, Date max_date) {
         return expenseRepository.getSumOfExpensesOfAnUserByCategoryAndDateInterval(user, category, min_date, max_date);
     }
+
+
+    public BigDecimal getSumOfExpensesByDateRange(ExtraUser user,String category, Date minDate, Date maxDate) {
+        return expenseRepository.getSumOfExpensesOfAnUserByCategoryAndDateInterval(user,category, minDate, maxDate);
+    }
+
+    public BigDecimal getSumOfExpensesByCategoryAfterGivenDate(ExtraUser user, String category, Date minDate) {
+        return expenseRepository.getSumOfExpensesOfAnUserAfterGivenDate(user, category, minDate);
+    }
+
+    public BigDecimal getSumOfExpensesByCategoryBeforeGivenDate(ExtraUser user, String category, Date maxDate) {
+        return expenseRepository.getSumOfExpensesOfAnUserBeforeGivenDate(user, category, maxDate);
+    }
+
+    public BigDecimal getSumOfExpensesByCategory(ExtraUser user, String category) {
+        return expenseRepository.getSumOfExpensesOfAnUserByCategory(user, category);
+    }
     
 }
