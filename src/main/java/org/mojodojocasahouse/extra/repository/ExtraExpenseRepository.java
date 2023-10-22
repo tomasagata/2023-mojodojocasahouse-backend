@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -29,18 +30,78 @@ public interface ExtraExpenseRepository extends JpaRepository<ExtraExpense, Long
 
     boolean existsByIdAndUser(Long id, ExtraUser user);
 
-    @Query("SELECT COALESCE(SUM(e.amount), 0) " + "FROM ExtraExpense e " + "WHERE e.user = :user " + "AND e.category = :category " + "AND e.date BETWEEN :minDate AND :maxDate")
-    BigDecimal getSumOfExpensesOfAnUserByCategoryAndDateInterval(@Param("user") ExtraUser user, @Param("category") String category, @Param("minDate") Date minDate,@Param("maxDate") Date maxDate
-    );
+    @Query( "SELECT e.category AS category, SUM(e.amount) AS amount FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+                "AND e.date BETWEEN :minDate AND :maxDate " +
+            "GROUP BY e.category")
+    List<Map<String, BigDecimal>> getSumOfExpensesOfUserByCategoryAndDateInterval(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories,
+            @Param("minDate") Date minDate,
+            @Param("maxDate") Date maxDate);
 
-    @Query("SELECT SUM(e.amount) FROM ExtraExpense e WHERE e.user = :user AND e.category = :category")
-    BigDecimal getSumOfExpensesOfAnUserByCategory(@Param("user") ExtraUser user, @Param("category") String category);
+    @Query( "SELECT e.category AS category, SUM(e.amount) AS amount FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+            "GROUP BY e.category")
+    List<Map<String, BigDecimal>> getSumOfExpensesByCategories(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories);
 
-    @Query("SELECT SUM(e.amount) FROM ExtraExpense e WHERE e.user = :user AND e.category = :category AND e.date >= :minDate")
-    BigDecimal getSumOfExpensesOfAnUserAfterGivenDate(@Param("user") ExtraUser user, @Param("category") String category, @Param("minDate") Date minDate);
+    @Query( "SELECT e.category AS category, SUM(e.amount) AS amount FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+                "AND e.date >= :minDate " +
+            "GROUP BY e.category")
+    List<Map<String, BigDecimal>> getSumOfExpensesOfUserAfterGivenDate(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories,
+            @Param("minDate") Date minDate);
     
-    @Query("SELECT SUM(e.amount) FROM ExtraExpense e WHERE e.user = :user AND e.category = :category AND e.date <= :maxDate")
-    BigDecimal getSumOfExpensesOfAnUserBeforeGivenDate(@Param("user") ExtraUser user, @Param("category") String category, @Param("maxDate") Date maxDate);
-    
+    @Query( "SELECT e.category AS category, SUM(e.amount) AS amount FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+                "AND e.date <= :maxDate " +
+            "GROUP BY e.category")
+    List<Map<String, BigDecimal>> getSumOfExpensesOfUserBeforeGivenDate(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories,
+            @Param("maxDate") Date maxDate);
+
+    @Query( "SELECT e FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+                "AND e.date BETWEEN :minDate AND :maxDate")
+    List<ExtraExpense> getExpensesOfUserByCategoriesAndDateInterval(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories,
+            @Param("minDate") Date minDate,
+            @Param("maxDate") Date maxDate);
+
+    @Query( "SELECT e FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories")
+    List<ExtraExpense> getExpensesOfUserByCategory(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories);
+
+    @Query( "SELECT e FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+                "AND e.date >= :minDate")
+    List<ExtraExpense> getExpensesOfUserAfterGivenDate(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories,
+            @Param("minDate") Date minDate);
+
+    @Query( "SELECT e FROM ExtraExpense e " +
+            "WHERE e.user = :user " +
+                "AND e.category IN :categories " +
+                "AND e.date <= :maxDate")
+    List<ExtraExpense> getExpensesOfUserBeforeGivenDate(
+            @Param("user") ExtraUser user,
+            @Param("categories") List<String> categories,
+            @Param("maxDate") Date maxDate);
 }
 

@@ -3,15 +3,13 @@ package org.mojodojocasahouse.extra.service;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
-import org.mojodojocasahouse.extra.dto.ApiResponse;
-import org.mojodojocasahouse.extra.dto.ExpenseAddingRequest;
-import org.mojodojocasahouse.extra.dto.ExpenseEditingRequest;
-import org.mojodojocasahouse.extra.dto.ExpenseDTO;
+import org.mojodojocasahouse.extra.dto.*;
 import org.mojodojocasahouse.extra.model.ExtraExpense;
 import org.mojodojocasahouse.extra.model.ExtraUser;
 import org.mojodojocasahouse.extra.repository.ExtraExpenseRepository;
@@ -83,25 +81,63 @@ public class ExpenseService {
         return expenseRepository.existsByIdAndUser(id, user);
     }
 
-    public BigDecimal getSumOfExpensesByCategoryAndDate(ExtraUser user, String category, Date min_date, Date max_date) {
-        return expenseRepository.getSumOfExpensesOfAnUserByCategoryAndDateInterval(user, category, min_date, max_date);
+    public List<Map<String, BigDecimal>> getSumOfExpensesOfUserByCategoriesAndDateRanges(ExtraUser user,
+                                                                                         List<String> categories,
+                                                                                         Date from, Date until) {
+        List<String> filteringCategories = categories;
+
+        if(filteringCategories == null || filteringCategories.isEmpty()){
+            filteringCategories = this.getAllCategories(user);
+        }
+
+        if (from == null && until == null){
+            return expenseRepository
+                    .getSumOfExpensesByCategories(user, filteringCategories);
+        } else if (from == null) {
+            return expenseRepository
+                    .getSumOfExpensesOfUserBeforeGivenDate(user, filteringCategories, until);
+        } else if (until == null) {
+            return expenseRepository
+                    .getSumOfExpensesOfUserAfterGivenDate(user, filteringCategories, from);
+        }
+
+        return expenseRepository
+                .getSumOfExpensesOfUserByCategoryAndDateInterval(user, filteringCategories, from, until);
     }
 
+    public List<ExpenseDTO> getExpensesOfUserByCategoriesAndDateRanges(ExtraUser user,
+                                                                       List<String> categories,
+                                                                       Date from, Date until) {
+        List<String> filteringCategories = categories;
 
-    public BigDecimal getSumOfExpensesByDateRange(ExtraUser user,String category, Date minDate, Date maxDate) {
-        return expenseRepository.getSumOfExpensesOfAnUserByCategoryAndDateInterval(user,category, minDate, maxDate);
-    }
+        if(filteringCategories == null || filteringCategories.isEmpty()){
+            filteringCategories = this.getAllCategories(user);
+        }
 
-    public BigDecimal getSumOfExpensesByCategoryAfterGivenDate(ExtraUser user, String category, Date minDate) {
-        return expenseRepository.getSumOfExpensesOfAnUserAfterGivenDate(user, category, minDate);
-    }
+        if (from == null && until == null){
+            return expenseRepository
+                    .getExpensesOfUserByCategory(user, filteringCategories)
+                    .stream()
+                    .map(ExtraExpense::asDto)
+                    .collect(Collectors.toList());
+        } else if (from == null) {
+            return expenseRepository
+                    .getExpensesOfUserBeforeGivenDate(user, filteringCategories, until)
+                    .stream()
+                    .map(ExtraExpense::asDto)
+                    .collect(Collectors.toList());
+        } else if (until == null) {
+            return expenseRepository
+                    .getExpensesOfUserAfterGivenDate(user, filteringCategories, from)
+                    .stream()
+                    .map(ExtraExpense::asDto)
+                    .collect(Collectors.toList());
+        }
 
-    public BigDecimal getSumOfExpensesByCategoryBeforeGivenDate(ExtraUser user, String category, Date maxDate) {
-        return expenseRepository.getSumOfExpensesOfAnUserBeforeGivenDate(user, category, maxDate);
+        return expenseRepository
+                .getExpensesOfUserByCategoriesAndDateInterval(user, filteringCategories, from, until)
+                .stream()
+                .map(ExtraExpense::asDto)
+                .collect(Collectors.toList());
     }
-
-    public BigDecimal getSumOfExpensesByCategory(ExtraUser user, String category) {
-        return expenseRepository.getSumOfExpensesOfAnUserByCategory(user, category);
-    }
-    
 }
