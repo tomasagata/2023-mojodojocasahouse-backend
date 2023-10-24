@@ -85,7 +85,7 @@ public class ExpensesControllerListingTest {
 
         // Setup - Expectations
         given(authService.getUserByPrincipal(any())).willReturn(linkedUser);
-        given(expenseService.getAllExpensesByUserId(any())).willReturn(expectedResponse);
+        given(expenseService.getExpensesOfUserByCategoriesAndDateRanges(any(), any(), any(), any())).willReturn(expectedResponse);
 
         // exercise
         MockHttpServletResponse response = getExpensesNoCookie();

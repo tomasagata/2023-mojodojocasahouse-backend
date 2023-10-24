@@ -29,6 +29,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(AuthenticationController.class)
 @Import({
@@ -66,16 +71,23 @@ public class AuthenticationControllerLoginTest {
     @WithMockUser
     public void testAccessingLoginEndpointWithValidCredentialsIsSuccessful() throws Exception {
         // Setup - data
-        new ExtraUser(
+        ExtraUser user = new ExtraUser(
                 "michael",
                 "jackson",
                 "mj@me.com",
                 "some_pass"
         );
+        Map<String, String> expectedCredentials = new HashMap<>();
+        expectedCredentials.put("firstName", "michael");
+        expectedCredentials.put("lastName", "jackson");
         ApiResponse expectedResponse = new ApiResponse(
-                "Login successful"
+                "Login successful",
+                expectedCredentials
         );
         Principal principal = Mockito.mock(Principal.class);
+
+        // Setup - expectations
+        given(authenticationService.getUserByPrincipal(any())).willReturn(user);
 
         // exercise
         MockHttpServletResponse response = loginWithPrincipal(principal);
