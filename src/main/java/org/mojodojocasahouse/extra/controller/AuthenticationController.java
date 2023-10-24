@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -37,8 +39,13 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse> login(Principal principal) {
         log.debug("User \"" + principal.getName() + "\" authenticated successfully");
 
+        ExtraUser user = userService.getUserByPrincipal(principal);
+        Map<String, String> userResponse = new HashMap<>();
+        userResponse.put("firstName", user.getFirstName());
+        userResponse.put("lastName", user.getLastName());
+
         return new ResponseEntity<>(
-                new ApiResponse("Login successful"),
+                new ApiResponse("Login successful", userResponse),
                 HttpStatus.OK
         );
     }

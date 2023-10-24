@@ -58,28 +58,51 @@ public class ExpensesController {
     }
 
     @DeleteMapping("/expenses/{id}")
-    public ApiResponse deleteExpense(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteExpense(Principal principal, @PathVariable Long id) {
         ExtraUser user = userService.getUserByPrincipal(principal);
     //Check that the user making the deletion is the owner of the expense
         if (!expenseService.isOwner(user, id)) {
-            return new ApiResponse("Error. You are not the owner of the expense you are trying to delete");
+            return new ResponseEntity<>(
+                    new ApiResponse("Error. You are not the owner of the expense you are trying to delete"),
+                    HttpStatus.FORBIDDEN
+            );
         }
     // Check if the expense with the given ID exists
         if (!expenseService.existsById(id)) {
-            return new ApiResponse("Error. Expense to delete not found");
+            return new ResponseEntity<>(
+                    new ApiResponse("Error. Expense to delete not found"),
+                    HttpStatus.NOT_FOUND
+            );
         }
     // Delete the expense by ID
         expenseService.deleteById(id);
-        return new ApiResponse("Expense deleted successfully");
+        return new ResponseEntity<>(
+                new ApiResponse("Expense deleted successfully"),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping(path = "/getMyExpenses", produces = "application/json")
     public ResponseEntity<List<ExpenseDTO>> getMyExpenses(
             Principal principal,
             @RequestParam(required = false) List<@ValidCategory String> categories,
-            @PastOrPresent @RequestParam(required = false) Date from,
-            @PastOrPresent @RequestParam(required = false) Date until){
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String until){
         ExtraUser user = userService.getUserByPrincipal(principal);
+        Date min_date;
+        Date max_date;
+
+        if(from != null && !from.isEmpty()) {
+            min_date = Date.valueOf(from);
+        } else {
+            min_date = null;
+        }
+
+        if(until != null && !until.isEmpty()) {
+            max_date = Date.valueOf(until);
+        } else {
+            max_date = null;
+        }
 
         log.debug("Retrieving expenses of user: \"" + principal.getName() + "\", " +
                 "for categories: " + categories + ", " +
@@ -87,7 +110,7 @@ public class ExpensesController {
                 "until: " + until + ".");
 
         List<ExpenseDTO> expenses = expenseService
-                .getExpensesOfUserByCategoriesAndDateRanges(user, categories, from, until);
+                .getExpensesOfUserByCategoriesAndDateRanges(user, categories, min_date, max_date);
 
         return ResponseEntity.ok(expenses);
     }
@@ -106,9 +129,23 @@ public class ExpensesController {
     public ResponseEntity<List<Map<String, BigDecimal>>> getExpensesByDateAndCategory(
             Principal principal,
             @RequestParam(required = false) List<@ValidCategory String> categories,
-            @PastOrPresent @RequestParam(required = false) Date from,
-            @PastOrPresent @RequestParam(required = false) Date until) {
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String until) {
         ExtraUser user = userService.getUserByPrincipal(principal);
+        Date min_date;
+        Date max_date;
+
+        if(from != null && !from.isEmpty()) {
+            min_date = Date.valueOf(from);
+        } else {
+            min_date = null;
+        }
+
+        if(until != null && !until.isEmpty()) {
+            max_date = Date.valueOf(until);
+        } else {
+            max_date = null;
+        }
 
         log.debug("Retrieving sum of expenses of user: \"" + principal.getName() + "\", " +
                 "for categories: " + categories + ", " +
@@ -116,7 +153,7 @@ public class ExpensesController {
                 "until: " + until + ".");
 
         List<Map<String, BigDecimal>> categoryAmounts = expenseService
-                .getSumOfExpensesOfUserByCategoriesAndDateRanges(user, categories, from, until);
+                .getSumOfExpensesOfUserByCategoriesAndDateRanges(user, categories, min_date, max_date);
 
         return ResponseEntity.ok(categoryAmounts);
     }
